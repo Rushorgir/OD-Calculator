@@ -69,12 +69,6 @@ Your OD Management System will open in your browser—fully functional!
    All data is saved in your browser—no backend, no signup.  
    Data stays safe unless you clear your browser or use a different device.
 
-## 🖼️ Screenshots
-
-| Dashboard | Timetable | Event History |
-|-----------|-----------|--------------|
-|  |  |  |
-
 ## 💡 Tips
 
 - **Support for Monday–Saturday:** Timetable and events fully support six weekdays.
