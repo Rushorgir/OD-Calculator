@@ -108,8 +108,3 @@ Inspired by modern student needs.
 MIT (or your chosen license)
 
 *Enjoy organized, stress-free OD management!*
-
-Sources
-
-
-Made with â¤ï¸ for students everywhere
