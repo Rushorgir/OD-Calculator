@@ -105,6 +105,6 @@ Inspired by modern student needs.
 
 ## 🦄 License
 
-MIT (or your chosen license)
+MIT
 
 *Enjoy organized, stress-free OD management!*
