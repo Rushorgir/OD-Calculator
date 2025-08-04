@@ -482,7 +482,7 @@ function updateHistoryTable() {
   if (!tbody) return;
   
   if (appState.events.length === 0) {
-    tbody.innerHTML = '<tr class="no-data"><td colspan="6">No events found</td></tr>';
+    tbody.innerHTML = '<tr class="no-data"><td colspan="7">No events found</td></tr>';
     return;
   }
 
@@ -499,10 +499,56 @@ function updateHistoryTable() {
         <td>${duration}</td>
         <td>${event.odUsed} mins</td>
         <td class="affected-classes">${affectedClasses}</td>
+        <td>
+          <button class="delete-event-btn" data-id="${event.id}" title="Delete event">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
       </tr>
     `;
   }).join('');
+
+  // Add event listeners for delete buttons
+  document.querySelectorAll('.delete-event-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const eventId = this.dataset.id;
+      const eventName = this.closest('tr').children[1].textContent;
+      
+      if (confirm(`Are you sure you want to delete "${eventName}"? This will restore the OD hours used.`)) {
+        removeEvent(eventId);
+      }
+    });
+  });
 }
+
+function removeEvent(eventId) {
+  // Find the event
+  const index = appState.events.findIndex(e => String(e.id) === String(eventId));
+  if (index === -1) {
+    showToast('Event not found', 'error');
+    return;
+  }
+
+  // Get the event data before removing
+  const eventToRemove = appState.events[index];
+  const odToRestore = eventToRemove.odUsed || 0;
+
+  // Restore OD balance
+  appState.odBalance += odToRestore;
+
+  // Remove event from array
+  appState.events.splice(index, 1);
+
+  // Save data and update UI
+  saveData();
+  updateDashboard();
+  updateHistoryTable();
+  
+  // Show success message
+  const hoursRestored = (odToRestore / 60).toFixed(1);
+  showToast(`Event deleted! ${odToRestore} minutes (${hoursRestored} hours) restored to OD balance`, 'success');
+}
+
 
 function filterHistoryTable(searchTerm) {
   const rows = document.querySelectorAll('#historyTableBody tr:not(.no-data)');

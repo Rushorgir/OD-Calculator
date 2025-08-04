@@ -1205,6 +1205,45 @@ body {
   color: var(--color-text-secondary);
 }
 
+/* Delete button styles */
+.delete-event-btn {
+  background-color: var(--color-error);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.delete-event-btn:hover {
+  background-color: #c53030;
+  transform: translateY(-1px);
+}
+
+.delete-event-btn:active {
+  transform: translateY(0);
+}
+
+/* Actions column styling */
+.history-table th:last-child,
+.history-table td:last-child {
+  width: 80px;
+  text-align: center;
+}
+
+/* No data row should span all columns including new Actions column */
+.no-data {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.no-data td {
+  padding: 2rem;
+}
+
 /* Modal Styles */
 .modal {
   position: fixed;
