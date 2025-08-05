@@ -27,7 +27,7 @@ You can run the project **locally** (no backend required).
 
 ```bash
 git clone https://github.com/Rushorgir/OD-Calculator
-cd Od-Calculator
+cd OD-Calculator
 ```
 
 ### 2. **Install the Live Server VSCode Extension**
