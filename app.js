@@ -430,6 +430,9 @@ function closeModalHandler() {
 function confirmEventAddition() {
   const modal = document.getElementById('confirmModal');
   if (!modal || !modal.eventData) return;
+  const modalTitle = document.getElementById('modalTitle');
+  if (modalTitle) modalTitle.textContent = "Confirm Event Addition";
+
   
   const eventData = modal.eventData;
 
@@ -583,6 +586,9 @@ function showEventDetailsModal(event) {
   const content = document.getElementById('confirmContent');
   const confirmButton = document.getElementById('confirmAdd');
   const cancelButton = document.getElementById('cancelConfirm');
+  const modalTitle = document.getElementById('modalTitle');
+  if (modalTitle) modalTitle.textContent = "Event Details";
+
   
   if (!modal || !content) return;
 
