@@ -1448,12 +1448,3 @@ body {
 #historyTableBody tr:not(.no-data):hover {
   background-color: var(--color-bg-3);
 }
-
-button i,
-.btn i,
-button .fas,
-.btn .fas {
-  margin-right: 0.4em; /* Adjust space as needed */
-  vertical-align: middle; /* optional for better vertical alignment */
-}
-
