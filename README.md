@@ -26,8 +26,8 @@ You can run the project **locally** (no backend required).
 ### 1. **Clone the Repository**
 
 ```bash
-git clone https://github.com/yourusername/od-management-system.git
-cd od-management-system
+git clone https://github.com/Rushorgir/OD-Calculator
+cd Od-Calculator
 ```
 
 ### 2. **Install the Live Server VSCode Extension**
