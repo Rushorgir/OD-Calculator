@@ -414,7 +414,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function closeModalHandler() {
   const modal = document.getElementById('confirmModal');
-  if (modal) modal.classList.add('hidden');
+  const confirmButton = document.getElementById('confirmAdd');
+  const cancelButton = document.getElementById('cancelConfirm');
+  
+  if (modal) {
+    modal.classList.add('hidden');
+    
+    // Reset modal to add-event mode
+    if (confirmButton) confirmButton.style.display = 'block';
+    if (cancelButton) cancelButton.textContent = 'Cancel';
+    modal.viewMode = false;
+  }
 }
 
 function confirmEventAddition() {
@@ -519,6 +529,7 @@ function updateHistoryTable() {
       }
     });
   });
+  setupEventHistoryPopup();
 }
 
 function removeEvent(eventId) {
@@ -549,6 +560,67 @@ function removeEvent(eventId) {
   showToast(`Event deleted! ${odToRestore} minutes (${hoursRestored} hours) restored to OD balance`, 'success');
 }
 
+function setupEventHistoryPopup() {
+  document.querySelectorAll('#historyTableBody tr:not(.no-data)').forEach(row => {
+    // Prevent click event if clicking the Remove button
+    row.addEventListener('click', function(e) {
+      if (e.target.classList.contains('delete-event-btn') || e.target.closest('.delete-event-btn')) 
+        return;
+
+      // Find the event data from appState.events using the row index
+      const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+      if (rowIndex < 0 || rowIndex >= appState.events.length) return;
+      
+      const event = appState.events[rowIndex];
+      showEventDetailsModal(event);
+    });
+    row.style.cursor = 'pointer';
+  });
+}
+
+function showEventDetailsModal(event) {
+  const modal = document.getElementById('confirmModal');
+  const content = document.getElementById('confirmContent');
+  const confirmButton = document.getElementById('confirmAdd');
+  const cancelButton = document.getElementById('cancelConfirm');
+  
+  if (!modal || !content) return;
+
+  // Hide the confirm button for view-only mode
+  if (confirmButton) confirmButton.style.display = 'none';
+  if (cancelButton) cancelButton.textContent = 'Close';
+
+  const eventDate = new Date(event.date).toLocaleDateString();
+  const duration = calculateDuration(event.startTime, event.endTime);
+  const affectedClasses = event.conflicts.length > 0 
+    ? event.conflicts.map(c => c.subject).join(', ') 
+    : 'None';
+
+  content.innerHTML = `
+    <div class="event-details-view">
+      <div><strong>Event:</strong> ${event.name}</div>
+      <div><strong>Place:</strong> ${event.place}</div>
+      <div><strong>Date:</strong> ${eventDate}</div>
+      <div><strong>Time:</strong> ${event.startTime} - ${event.endTime}</div>
+      <div><strong>Duration:</strong> ${duration}</div>
+      <div><strong>OD Hours Used:</strong> ${event.odUsed} minutes (${(event.odUsed/60).toFixed(1)} hours)</div>
+      <div><strong>Affected Classes:</strong> ${affectedClasses}</div>
+      ${event.conflicts.length > 0 ? `
+        <div><strong>Class Details:</strong></div>
+        <ul style="margin-left: 20px;">
+          ${event.conflicts.map(conflict => `
+            <li>${conflict.subject} (${conflict.type}) - ${conflict.start} to ${conflict.end}</li>
+          `).join('')}
+        </ul>
+      ` : ''}
+    </div>
+  `;
+
+  modal.classList.remove('hidden');
+  
+  // Store that this is view mode (not add mode)
+  modal.viewMode = true;
+}
 
 function filterHistoryTable(searchTerm) {
   const rows = document.querySelectorAll('#historyTableBody tr:not(.no-data)');

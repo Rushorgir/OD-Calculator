@@ -1435,3 +1435,16 @@ body {
     padding: var(--space-20);
   }
 }
+
+.event-details-view div {
+  margin-bottom: 8px;
+}
+
+.event-details-view ul {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+#historyTableBody tr:not(.no-data):hover {
+  background-color: var(--color-bg-3);
+}
