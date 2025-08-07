@@ -914,17 +914,17 @@ body {
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   z-index: 2;
-  margin: 0;           /* Remove default margin to eliminate gap */
-  line-height: 1;      /* Reduce line height for tighter spacing */
+  margin: 0;          
+  line-height: 1;
 }
 
 .od-label {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   z-index: 2;
-  margin: 0;           /* Remove default margin */
-  padding-top: 0;      /* Remove any padding */
-  line-height: 1;      /* Tighten line height to move text up */
+  margin: 0;          
+  padding-top: 0;     
+  line-height: 1;      
 }
 
 .od-details h3 {

@@ -1,6 +1,3 @@
-// OD Management System JavaScript
-
-// Application data from the provided JSON
 const APP_DATA = {
   theory_slots: [
     {"id": 1, "start": "08:00", "end": "08:50"},
@@ -25,22 +22,21 @@ const APP_DATA = {
     {"id": 6, "start": "17:40", "end": "19:20"}
   ],
   days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-  initial_od_balance: 40 * 60, // Convert to minutes for internal calculations
+  initial_od_balance: 40 * 60,
   class_durations: {
     theory: 50,
     lab: 100
   }
 };
 
-// Application state
 let appState = {
-  odBalance: APP_DATA.initial_od_balance, // 40 hours in minutes (2400 minutes)
+  odBalance: APP_DATA.initial_od_balance,
   timetable: {},
   events: [],
   currentClassType: 'theory'
 };
 
-// Initialize the application
+
 document.addEventListener('DOMContentLoaded', function() {
   loadData();
   initializeNavigation();
@@ -49,12 +45,10 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeHistory();
   updateDashboard();
   
-  // Set minimum date to today
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('eventDate').setAttribute('min', today);
 });
 
-// Data persistence functions
 function saveData() {
   localStorage.setItem('odManagementData', JSON.stringify(appState));
 }
@@ -65,13 +59,11 @@ function loadData() {
     const loaded = JSON.parse(savedData);
     appState = { ...appState, ...loaded };
   }
-  // Ensure OD balance is in minutes and not less than initial if no data exists
   if (!savedData) {
     appState.odBalance = APP_DATA.initial_od_balance;
   }
 }
 
-// Navigation functionality
 function initializeNavigation() {
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('.section');
@@ -83,25 +75,21 @@ function initializeNavigation() {
       e.preventDefault();
       const targetSection = this.getAttribute('data-section');
       
-      console.log('Navigation clicked:', targetSection); // Debug log
+      console.log('Navigation clicked:', targetSection);
       
-      // Update active nav link
       navLinks.forEach(l => l.classList.remove('active'));
       this.classList.add('active');
       
-      // Show target section
       sections.forEach(s => s.classList.remove('active'));
       const targetElement = document.getElementById(targetSection);
       if (targetElement) {
         targetElement.classList.add('active');
       }
       
-      // Close sidebar on mobile
       if (window.innerWidth <= 768) {
         sidebar.classList.remove('active');
       }
       
-      // Update specific sections when navigated to
       if (targetSection === 'history') {
         updateHistoryTable();
       } else if (targetSection === 'timetable') {
@@ -110,14 +98,12 @@ function initializeNavigation() {
     });
   });
 
-  // Mobile sidebar toggle
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', function() {
       sidebar.classList.toggle('active');
     });
   }
 
-  // Close sidebar when clicking outside on mobile
   document.addEventListener('click', function(e) {
     if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && (!sidebarToggle || !sidebarToggle.contains(e.target))) {
       sidebar.classList.remove('active');
@@ -125,7 +111,6 @@ function initializeNavigation() {
   });
 }
 
-// Timetable functionality
 function initializeTimetable() {
   generateTimetableGrid();
   setupTimetableControls();
@@ -137,12 +122,10 @@ function generateTimetableGrid() {
   
   grid.innerHTML = '';
 
-  // Add empty corner cell
   const cornerCell = document.createElement('div');
   cornerCell.className = 'time-header';
   grid.appendChild(cornerCell);
 
-  // Add day headers
   APP_DATA.days.forEach(day => {
     const dayHeader = document.createElement('div');
     dayHeader.className = 'day-header';
@@ -150,18 +133,14 @@ function generateTimetableGrid() {
     grid.appendChild(dayHeader);
   });
 
-  // Get current slots based on selected type
   const currentSlots = appState.currentClassType === 'theory' ? APP_DATA.theory_slots : APP_DATA.lab_slots;
 
-  // Add time slots
   currentSlots.forEach(slot => {
-    // Time label
     const timeLabel = document.createElement('div');
     timeLabel.className = 'time-header';
     timeLabel.innerHTML = `<div>${slot.start}</div><div class="time-label">${slot.end}</div>`;
     grid.appendChild(timeLabel);
 
-    // Day slots
     APP_DATA.days.forEach(day => {
       const timeSlot = document.createElement('div');
       timeSlot.className = 'time-slot';
@@ -219,12 +198,10 @@ function toggleTimeSlot(slot) {
   const timetableKey = `${day}-${type}-${slotId}`;
 
   if (appState.timetable[timetableKey]) {
-    // Remove class
     delete appState.timetable[timetableKey];
     slot.classList.remove(type);
     slot.textContent = 'Available';
   } else {
-    // Add class
     const subject = prompt(`Enter subject name for this ${type} class:`);
     if (subject && subject.trim()) {
       appState.timetable[timetableKey] = {
@@ -250,7 +227,6 @@ function getSlotTime(type, slotId, timeType) {
   return slot ? slot[timeType] : null;
 }
 
-// Event form functionality
 function initializeEventForm() {
   const form = document.getElementById('eventForm');
   const conflictPreview = document.getElementById('conflictPreview');
@@ -260,7 +236,6 @@ function initializeEventForm() {
 
   if (!form) return;
 
-  // Real-time conflict detection
   [startTimeInput, endTimeInput, dateInput].forEach(input => {
     if (input) {
       input.addEventListener('change', checkConflicts);
@@ -368,7 +343,6 @@ function handleEventSubmission() {
     return;
   }
 
-  // Show confirmation modal
   showConfirmationModal(eventName, eventPlace, eventDate, startTime, endTime, conflicts, totalOD);
 }
 
@@ -397,11 +371,9 @@ function showConfirmationModal(name, place, date, startTime, endTime, conflicts,
   content.innerHTML = html;
   modal.classList.remove('hidden');
 
-  // Store event data for confirmation
   modal.eventData = { name, place, date, startTime, endTime, conflicts, totalOD };
 }
 
-// Modal event listeners
 document.addEventListener('DOMContentLoaded', function() {
   const closeModal = document.getElementById('closeModal');
   const cancelConfirm = document.getElementById('cancelConfirm');
@@ -420,7 +392,6 @@ function closeModalHandler() {
   if (modal) {
     modal.classList.add('hidden');
     
-    // Reset modal to add-event mode
     if (confirmButton) confirmButton.style.display = 'block';
     if (cancelButton) cancelButton.textContent = 'Cancel';
     modal.viewMode = false;
@@ -436,7 +407,6 @@ function confirmEventAddition() {
   
   const eventData = modal.eventData;
 
-  // Create event object
   const event = {
     id: Date.now(),
     name: eventData.name,
@@ -449,7 +419,6 @@ function confirmEventAddition() {
     timestamp: new Date().toISOString()
   };
 
-  // Add event and update OD balance
   appState.events.push(event);
   appState.odBalance -= eventData.totalOD;
 
@@ -457,7 +426,6 @@ function confirmEventAddition() {
   updateDashboard();
   updateHistoryTable();
   
-  // Reset form and close modal
   const form = document.getElementById('eventForm');
   if (form) form.reset();
   
@@ -469,7 +437,6 @@ function confirmEventAddition() {
   showToast('Event added successfully!', 'success');
 }
 
-// History functionality
 function initializeHistory() {
   updateHistoryTable();
   setupHistoryControls();
@@ -521,7 +488,6 @@ function updateHistoryTable() {
     `;
   }).join('');
 
-  // Add event listeners for delete buttons
   document.querySelectorAll('.delete-event-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const eventId = this.dataset.id;
@@ -536,41 +502,33 @@ function updateHistoryTable() {
 }
 
 function removeEvent(eventId) {
-  // Find the event
   const index = appState.events.findIndex(e => String(e.id) === String(eventId));
   if (index === -1) {
     showToast('Event not found', 'error');
     return;
   }
 
-  // Get the event data before removing
   const eventToRemove = appState.events[index];
   const odToRestore = eventToRemove.odUsed || 0;
 
-  // Restore OD balance
   appState.odBalance += odToRestore;
 
-  // Remove event from array
   appState.events.splice(index, 1);
 
-  // Save data and update UI
   saveData();
   updateDashboard();
   updateHistoryTable();
   
-  // Show success message
   const hoursRestored = (odToRestore / 60).toFixed(1);
   showToast(`Event deleted! ${odToRestore} minutes (${hoursRestored} hours) restored to OD balance`, 'success');
 }
 
 function setupEventHistoryPopup() {
   document.querySelectorAll('#historyTableBody tr:not(.no-data)').forEach(row => {
-    // Prevent click event if clicking the Remove button
     row.addEventListener('click', function(e) {
       if (e.target.classList.contains('delete-event-btn') || e.target.closest('.delete-event-btn')) 
         return;
 
-      // Find the event data from appState.events using the row index
       const rowIndex = Array.from(row.parentNode.children).indexOf(row);
       if (rowIndex < 0 || rowIndex >= appState.events.length) return;
       
@@ -592,7 +550,6 @@ function showEventDetailsModal(event) {
   
   if (!modal || !content) return;
 
-  // Hide the confirm button for view-only mode
   if (confirmButton) confirmButton.style.display = 'none';
   if (cancelButton) cancelButton.textContent = 'Close';
 
@@ -624,7 +581,6 @@ function showEventDetailsModal(event) {
 
   modal.classList.remove('hidden');
   
-  // Store that this is view mode (not add mode)
   modal.viewMode = true;
 }
 
@@ -684,7 +640,6 @@ function downloadCSV(content, filename) {
   window.URL.revokeObjectURL(url);
 }
 
-// Dashboard functionality
 function updateDashboard() {
   updateODProgress();
   updateStats();
@@ -701,7 +656,6 @@ function updateODProgress() {
   const remainingHours = Math.floor(remainingMinutes / 60);
   const remainingMins = remainingMinutes % 60;
   
-  // Display hours properly
   if (remainingHours === 0 && remainingMins === 0) {
     odHours.textContent = '0';
   } else if (remainingMins === 0) {
@@ -710,7 +664,6 @@ function updateODProgress() {
     odHours.textContent = remainingHours + '.' + Math.round((remainingMins / 60) * 10);
   }
   
-  // Update progress circle (calculate percentage correctly)
   const totalInitialMinutes = APP_DATA.initial_od_balance;
   const percentage = (remainingMinutes / totalInitialMinutes) * 360;
   odProgress.style.background = `conic-gradient(var(--color-primary) ${percentage}deg, var(--color-secondary) ${percentage}deg)`;
@@ -752,7 +705,6 @@ function updateRecentEvents() {
   `).join('');
 }
 
-// Toast notification system
 function showToast(message, type = 'info') {
   const toastContainer = document.getElementById('toastContainer');
   if (!toastContainer) return;
@@ -763,13 +715,11 @@ function showToast(message, type = 'info') {
 
   toastContainer.appendChild(toast);
 
-  // Auto remove after 3 seconds
   setTimeout(() => {
     toast.remove();
   }, 3000);
 }
 
-// Utility functions
 function formatTime(time) {
   return new Date(`2000-01-01 ${time}`).toLocaleTimeString('en-US', { 
     hour: 'numeric', 
