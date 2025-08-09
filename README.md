@@ -27,13 +27,31 @@
 - 📆 **Event Handling** — Conflict detection + auto OD hour calculation.
 - ⏳ **OD Balance Tracking** — Visual progress bar for remaining OD hours (starts at 40h).
 - 📜 **Event History** — Search, sort, and export your event records.
-- 💾 **Persistent Storage** — All data saved in your browser’s localStorage.
+- 💾 **Persistent Storage** — All data is saved in your browser’s localStorage.
 
 ---
 
 ## 📦 Live Demo
 > No backend, runs locally — lightning fast.
 
+## 🛠 Installation & Setup
 ```bash
 git clone https://github.com/Rushorgir/OD-Calculator
 cd OD-Calculator
+Run using Live Server in VS Code:
+	1.	Install Live Server extension by Ritwick Dey.
+	2.	Right-click index.html → “Open with Live Server”. (You'll find the button at the bottom right)
+	3.	The browser opens the app.
+```
+---
+
+## 📋 Usage Guide
+1.	**Setup Timetable** → Click slots, choose Theory/Lab.
+2.	**Add Events** → Enter details, overlaps auto-detected.
+3.	**View History** → Search, export to CSV.
+4.	**Dashboard** → See remaining OD hours & recent activity.
+5.	**Delete Events** → Removes and restores OD balance.
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:001F1F,100:00FFD1&height=120&section=footer"/>
+</p>
