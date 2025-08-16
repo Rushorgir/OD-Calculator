@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
   updateDashboard();
   
   const today = new Date().toISOString().split('T')[0];
-  document.getElementById('eventDate').setAttribute('min', today);
 });
 
 function saveData() {
