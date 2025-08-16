@@ -49,6 +49,8 @@ Run using Live Server in VS Code:
 4.	**Dashboard** → See remaining OD hours & recent activity.
 5.	**Delete Events** → Removes and restores OD balance.
 
+---
+
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:001F1F,100:00FFD1&height=120&section=footer"/>
 </p>
