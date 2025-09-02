@@ -1,0 +1,9 @@
+{
+  "name": "od-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prebuild": "node scripts/write-supabase-config.js",
+    "build": "echo \"static site\""
+  }
+}
