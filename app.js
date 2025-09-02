@@ -157,6 +157,34 @@ function initializeNavigation() {
       sidebar.classList.remove('active');
     }
   });
+
+  initializeThemeToggle();
+}
+
+function initializeThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  if (!themeToggle) return;
+
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-color-scheme', theme);
+    localStorage.setItem('theme', theme);
+  };
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-color-scheme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+  });
+
+  // Apply saved theme on load
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme(prefersDark ? 'dark' : 'light');
+  }
 }
 
 function initializeTimetable() {

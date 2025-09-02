@@ -737,8 +737,6 @@ select.form-control {
     format('woff2');
 }
 
-/* END PERPLEXITY DESIGN SYSTEM */
-/* Additional styles for OD Management System */
 
 body {
   margin: 0;
@@ -746,6 +744,10 @@ body {
   display: flex;
   min-height: 100vh;
   background-color: var(--color-background);
+}
+
+.login-page {
+  display: block;
 }
 
 /* Sidebar Navigation */
@@ -756,6 +758,8 @@ body {
   padding: var(--space-20);
   position: fixed;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   transition: transform var(--duration-normal) var(--ease-standard);
   z-index: 1000;
@@ -827,6 +831,39 @@ body {
   width: 20px;
   text-align: center;
 }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-border);
+}
+
+.theme-toggle-btn {
+  background: var(--color-secondary);
+  border: none;
+  color: var(--color-text-secondary);
+  width: 100%;
+  padding: var(--space-10);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-lg);
+  transition: all var(--duration-fast) ease-in-out;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--color-secondary-hover);
+  color: var(--color-text);
+}
+
+.theme-toggle-btn .fa-sun { display: none; }
+.theme-toggle-btn .fa-moon { display: block; }
+
+[data-color-scheme="dark"] .theme-toggle-btn .fa-sun { display: block; }
+[data-color-scheme="dark"] .theme-toggle-btn .fa-moon { display: none; }
+
 
 /* Main Content */
 .main-content {
