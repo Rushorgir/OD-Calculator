@@ -8,16 +8,16 @@
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&pause=1000&color=00FFD1&center=true&vCenter=true&width=700&lines=Sleek+College+OD+Tracker;Interactive+and+Fully+Responsive;No+Backend+Required;Built+with+HTML+CSS+JS"/>
 </p>
 
----
-
 <p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-00FFD1?style=for-the-badge&logo=none&logoColor=black"/>
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
 </p>
 
-> <p align="center">A modern web app for managing your college OD hours, timetable, and event history — right in your browser.</p>
+---
+
+## 📌 Overview
+OD Management System is a lightweight, client-side web app to track OD hours, manage a weekly timetable, and log events with automatic conflict-based OD calculation. It saves everything locally in the browser, supports adding/editing classes and events (past or future), shows a visual OD balance, and includes searchable, exportable event history with delete-and-restore OD.
 
 ---
 
@@ -30,9 +30,6 @@
 - 💾 **Persistent Storage** — All data is saved in your browser’s localStorage.
 
 ---
-
-## 📦 Live Demo
-> No backend, runs locally — lightning fast.
 
 ## 🛠 Installation & Setup
 ```bash
@@ -51,6 +48,8 @@ Run using Live Server in VS Code:
 3.	**View History** → Search, export to CSV.
 4.	**Dashboard** → See remaining OD hours & recent activity.
 5.	**Delete Events** → Removes and restores OD balance.
+
+---
 
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:001F1F,100:00FFD1&height=120&section=footer"/>
