@@ -1,258 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OD Management System</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <!-- Navigation Sidebar -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2><i class="fas fa-calendar-check"></i> OD Manager</h2>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        <ul class="nav-menu">
-            <li><a href="#" data-section="dashboard" class="nav-link active">
-                <i class="fas fa-home"></i> Dashboard
-            </a></li>
-            <li><a href="#" data-section="timetable" class="nav-link">
-                <i class="fas fa-table"></i> Timetable
-            </a></li>
-            <li><a href="#" data-section="add-event" class="nav-link">
-                <i class="fas fa-plus"></i> Add Event
-            </a></li>
-            <li><a href="#" data-section="history" class="nav-link">
-                <i class="fas fa-history"></i> Event History
-            </a></li>
-        </ul>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="section active">
-            <div class="section-header">
-                <h1>Dashboard</h1>
-                <p>Welcome to your OD Management System</p>
-            </div>
-            
-            <div class="dashboard-grid">
-                <div class="card dashboard-card od-balance-card">
-                    <div class="card__body">
-                        <div class="od-balance-content">
-                            <div class="od-circle">
-                                <div class="od-progress" id="odProgress">
-                                    <span class="od-hours" id="odHours">40</span>
-                                    <span class="od-label">hours left</span>
-                                </div>
-                            </div>
-                            <div class="od-details">
-                                <h3>OD Balance</h3>
-                                <p>Out of 40 hours</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card dashboard-card">
-                    <div class="card__body">
-                        <div class="stat-content">
-                            <div class="stat-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div class="stat-details">
-                                <h3 id="totalEvents">0</h3>
-                                <p>Total Events</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card dashboard-card">
-                    <div class="card__body">
-                        <div class="stat-content">
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-details">
-                                <h3 id="totalODUsed">0</h3>
-                                <p>OD Hours Used</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card dashboard-card">
-                    <div class="card__body">
-                        <div class="stat-content">
-                            <div class="stat-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="stat-details">
-                                <h3 id="totalClasses">0</h3>
-                                <p>Classes Scheduled</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="recent-events">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>OD Manager — Login</title>
+        <link rel="stylesheet" href="style.css" />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body class="login-page">
+        <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;">
+            <div style="max-width:420px;width:100%">
                 <div class="card">
                     <div class="card__header">
-                        <h3>Recent Events</h3>
+                        <h2 style="margin:0">Sign in to OD Manager</h2>
                     </div>
                     <div class="card__body">
-                        <div id="recentEventsList" class="events-list">
-                            <p class="no-events">No events added yet</p>
+                        <div style="margin-bottom:16px;color:var(--color-text-secondary)">Use a simple name (username) or an email. If you enter only a name, the app will append <code>@local</code> to create an internal email for Supabase.</div>
+
+                        <div id="authTabs" style="display:flex;gap:8px;margin-bottom:16px">
+                            <button id="showLogin" class="btn btn--secondary">Login</button>
+                            <button id="showSignup" class="btn">Sign up</button>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form id="loginForm" style="display:block">
+                            <div class="form-group">
+                                <label class="form-label">Name or Email</label>
+                                <input id="loginName" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input id="loginPassword" type="password" class="form-control" required />
+                            </div>
+                            <button type="submit" class="btn btn--primary btn--full-width">Log in</button>
+                        </form>
+
+                        <!-- Signup Form -->
+                        <form id="signupForm" style="display:none">
+                            <div class="form-group">
+                                <label class="form-label">Full name</label>
+                                <input id="signupFullName" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Name or Email</label>
+                                <input id="signupName" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input id="signupPassword" type="password" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm Password</label>
+                                <input id="signupConfirmPassword" type="password" class="form-control" required />
+                            </div>
+                            <button type="submit" class="btn btn--primary btn--full-width">Create account</button>
+                        </form>
+
+                        <div style="margin-top:12px;text-align:center">
+                            <small>After login you'll be redirected to the OD Calculator.</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </main>
 
-        <!-- Timetable Section -->
-        <section id="timetable" class="section">
-            <div class="section-header">
-                <h1>Timetable Management</h1>
-                <p>Set up your weekly class schedule</p>
-            </div>
+        <div id="toastContainer" class="toast-container"></div>
 
-            <div class="timetable-controls">
-                <div class="class-type-selector">
-                    <button class="btn btn--secondary class-type-btn active" data-type="theory">
-                        <i class="fas fa-book"></i>&nbsp;Theory
-                    </button>
-                    <button class="btn btn--secondary class-type-btn" data-type="lab">
-                        <i class="fas fa-flask"></i>&nbsp;Lab
-                    </button>
-                </div>
-                <button class="btn btn--outline" id="clearTimetable">
-                    <i class="fas fa-trash"></i>&nbsp;Clear All
-                </button>
-            </div>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+        <script src="supabase-config.js"></script>
 
-            <div class="timetable-container">
-                <div class="timetable-grid" id="timetableGrid">
-                    <!-- Timetable will be generated by JavaScript -->
-                </div>
-            </div>
-        </section>
+        <script>
+            // Simple UI switching
+            const showLogin = document.getElementById('showLogin');
+            const showSignup = document.getElementById('showSignup');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
 
-        <!-- Add Event Section -->
-        <section id="add-event" class="section">
-            <div class="section-header">
-                <h1>Add Event</h1>
-                <p>Enter event details to calculate OD usage</p>
-            </div>
+            showLogin.addEventListener('click', () => {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                showLogin.classList.add('btn--secondary');
+                showSignup.classList.remove('btn--secondary');
+            });
+            showSignup.addEventListener('click', () => {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                showSignup.classList.add('btn--secondary');
+                showLogin.classList.remove('btn--secondary');
+            });
 
-            <div class="add-event-container">
-                <form id="eventForm" class="event-form">
-                    <div class="form-group">
-                        <label class="form-label" for="eventName">Event Name</label>
-                        <input type="text" id="eventName" class="form-control" required>
-                    </div>
+            // helper toast
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) return;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
 
-                    <div class="form-group">
-                        <label class="form-label" for="eventPlace">Place</label>
-                        <input type="text" id="eventPlace" class="form-control" required>
-                    </div>
+            // Use a username-only workflow: if user enters a plain name without '@', append @local
+            function normalizeIdentifier(input) {
+                const v = input.trim();
+                return v.includes('@') ? v : `${v}@local`;
+            }
 
-                    <div class="form-group">
-                        <label class="form-label" for="eventDate">Date</label>
-                        <input type="date" id="eventDate" class="form-control" required>
-                    </div>
+            // Ensure supabaseClient exists
+            if (typeof supabaseClient === 'undefined') {
+                showToast('Supabase not configured. Copy supabase-config.example.js to supabase-config.js and add your keys.', 'error');
+            }
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="startTime">Start Time</label>
-                            <input type="time" id="startTime" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="endTime">End Time</label>
-                            <input type="time" id="endTime" class="form-control" required>
-                        </div>
-                    </div>
+            // Login handler
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('loginName').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                if (!name || !password) return showToast('Provide credentials', 'warning');
 
-                    <div id="conflictPreview" class="conflict-preview"></div>
+                const email = normalizeIdentifier(name);
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    showToast(error.message || 'Login failed', 'error');
+                    return;
+                }
+                showToast('Login successful', 'success');
+                // redirect to protected app
+                window.location.href = '/app.html';
+            });
 
-                    <button type="submit" class="btn btn--primary btn--full-width">
-                        <i class="fas fa-plus"></i> Add Event
-                    </button>
-                </form>
-            </div>
-        </section>
+            // Signup handler
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('signupFullName').value.trim();
+                const name = document.getElementById('signupName').value.trim();
+                const password = document.getElementById('signupPassword').value;
+                const confirm = document.getElementById('signupConfirmPassword').value;
 
-        <!-- Event History Section -->
-        <section id="history" class="section">
-            <div class="section-header">
-                <h1>Event History</h1>
-                <p>View all your past events and OD usage</p>
-            </div>
+                if (!fullName || !name || !password) return showToast('All fields required', 'warning');
+                if (password !== confirm) return showToast('Passwords do not match', 'error');
 
-            <div class="history-controls">
-                <div class="search-container">
-                    <input type="text" id="searchEvents" class="form-control" placeholder="Search events...">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                <button class="btn btn--outline" id="exportHistory">
-                    <i class="fas fa-download"></i>&nbsp;Export
-                </button>
-            </div>
+                const email = normalizeIdentifier(name);
 
-            <div class="history-table-container">
-                <table class="history-table" id="historyTable">
-                    <thead>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Event Name</th>
-                                <th>Place</th>
-                                <th>Duration</th>
-                                <th>OD Hours Used</th>
-                                <th>Affected Classes</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                    </thead>
-                    <tbody id="historyTableBody">
-                        <tr class="no-data">
-                            <td colspan="6">No events found</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <!-- Confirmation Modal -->
-    <div id="confirmModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Confirm Event Addition</h3>
-                <button class="modal-close" id="closeModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="confirmContent"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn--secondary" id="cancelConfirm">Cancel</button>
-                <button class="btn btn--primary" id="confirmAdd">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notifications -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <script src="app.js"></script>
-</body>
+                const { data, error } = await supabaseClient.auth.signUp({ email, password }, { data: { full_name: fullName } });
+                if (error) {
+                    showToast(error.message || 'Signup failed', 'error');
+                    return;
+                }
+                showToast('Account created. Check your email if verification is required. Logging you in...', 'success');
+                // try to sign in immediately
+                const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
+                window.location.href = '/app.html';
+            });
+        </script>
+    </body>
 </html>

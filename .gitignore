@@ -1,0 +1,8 @@
+# Supabase local config
+supabase-config.js
+
+# Node modules (if you add any build tooling later)
+node_modules/
+
+# Vercel local config
+.vercel/

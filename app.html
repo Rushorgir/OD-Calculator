@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OD Management System</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-calendar-check"></i> OD Manager</h2>
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <ul class="nav-menu">
+      <li>
+        <a href="#" data-section="dashboard" class="nav-link active">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+      </li>
+      <li
+        <a href="#" data-section="timetable" class="nav-link">
+          <i class="fas fa-table"></i> Timetable
+        </a>
+      </li>
+      <li>
+        <a href="#" data-section="add-event" class="nav-link">
+          <i class="fas fa-plus"></i> Add Event
+        </a>
+      </li>
+      <li>
+        <a href="#" data-section="history" class="nav-link">
+          <i class="fas fa-history"></i> Event History
+        </a>
+      </li>
+      <li>
+        <a href="#" id="logoutBtn" class="nav-link">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section active">
+      <div class="section-header">
+        <h1>Dashboard</h1>
+        <p>Welcome to your OD Management System</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card dashboard-card od-balance-card">
+          <div class="card__body">
+            <div class="od-balance-content">
+              <div class="od-circle">
+                <div class="od-progress" id="odProgress">
+                  <span class="od-hours" id="odHours">40</span>
+                  <span class="od-label">hours left</span>
+                </div>
+              </div>
+              <div class="od-details">
+                <h3>OD Balance</h3>
+                <p>Out of 40 hours</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card dashboard-card">
+          <div class="card__body">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="stat-details">
+                <h3 id="totalEvents">0</h3>
+                <p>Total Events</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card dashboard-card">
+          <div class="card__body">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-details">
+                <h3 id="totalODUsed">0</h3>
+                <p>OD Hours Used</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card dashboard-card">
+          <div class="card__body">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="fas fa-book"></i>
+              </div>
+              <div class="stat-details">
+                <h3 id="totalClasses">0</h3>
+                <p>Classes Scheduled</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="recent-events">
+        <div class="card">
+          <div class="card__header">
+            <h3>Recent Events</h3>
+          </div>
+          <div class="card__body">
+            <div id="recentEventsList" class="events-list">
+              <p class="no-events">No events added yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timetable Section -->
+    <section id="timetable" class="section">
+      <div class="section-header">
+        <h1>Timetable Management</h1>
+        <p>Set up your weekly class schedule</p>
+      </div>
+
+      <div class="timetable-controls">
+        <div class="class-type-selector">
+          <button class="btn btn--secondary class-type-btn active" data-type="theory">
+            <i class="fas fa-book"></i>&nbsp;Theory
+          </button>
+          <button class="btn btn--secondary class-type-btn" data-type="lab">
+            <i class="fas fa-flask"></i>&nbsp;Lab
+          </button>
+        </div>
+        <button class="btn btn--outline" id="clearTimetable">
+          <i class="fas fa-trash"></i>&nbsp;Clear All
+        </button>
+      </div>
+
+      <div class="timetable-container">
+        <div class="timetable-grid" id="timetableGrid"></div>
+      </div>
+    </section>
+
+    <!-- Add Event Section -->
+    <section id="add-event" class="section">
+      <div class="section-header">
+        <h1>Add Event</h1>
+        <p>Enter event details to calculate OD usage</p>
+      </div>
+
+      <div class="add-event-container">
+        <form id="eventForm" class="event-form">
+          <div class="form-group">
+            <label class="form-label" for="eventName">Event Name</label>
+            <input type="text" id="eventName" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="eventPlace">Place</label>
+            <input type="text" id="eventPlace" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="eventDate">Date</label>
+            <input type="date" id="eventDate" class="form-control" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="startTime">Start Time</label>
+              <input type="time" id="startTime" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="endTime">End Time</label>
+              <input type="time" id="endTime" class="form-control" required>
+            </div>
+          </div>
+
+          <div id="conflictPreview" class="conflict-preview"></div>
+
+          <button type="submit" class="btn btn--primary btn--full-width">
+            <i class="fas fa-plus"></i> Add Event
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Event History Section -->
+    <section id="history" class="section">
+      <div class="section-header">
+        <h1>Event History</h1>
+        <p>View all your past events and OD usage</p>
+      </div>
+
+      <div class="history-controls">
+        <div class="search-container">
+          <input type="text" id="searchEvents" class="form-control" placeholder="Search events...">
+          <i class="fas fa-search search-icon"></i>
+        </div>
+        <button class="btn btn--outline" id="exportHistory">
+          <i class="fas fa-download"></i>&nbsp;Export
+        </button>
+      </div>
+
+      <div class="history-table-container">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Event Name</th>
+              <th>Place</th>
+              <th>Duration</th>
+              <th>OD Hours Used</th>
+              <th>Affected Classes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr class="no-data">
+              <td colspan="7">No events found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Confirm Event Addition</h3>
+        <button class="modal-close" id="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="confirmContent"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" id="cancelConfirm">Cancel</button>
+        <button class="btn btn--primary" id="confirmAdd">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div id="toastContainer" class="toast-container"></div>
+
+
+  <!-- We'll load the main app script and supabase. The full app logic is inside app.js. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    // Ensure user is authenticated before loading the app
+    (async function() {
+      if (typeof supabaseClient === 'undefined') {
+        alert('Supabase not configured. Copy supabase-config.example.js to supabase-config.js and add your keys.');
+        return;
+      }
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) {
+        // redirect to login
+        window.location.href = '/index.html';
+        return;
+      }
+      // load main app.js
+      const s = document.createElement('script');
+      s.src = 'app.js';
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

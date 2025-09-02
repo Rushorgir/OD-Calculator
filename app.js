@@ -48,12 +48,27 @@ document.addEventListener('DOMContentLoaded', function() {
   const today = new Date().toISOString().split('T')[0];
 });
 
-function saveData() {
-  localStorage.setItem('odManagementData', JSON.stringify(appState));
+async function getStorageKey() {
+  try {
+    if (typeof supabaseClient !== 'undefined') {
+      const { data } = await supabaseClient.auth.getUser();
+      const user = data && data.user;
+      if (user && user.id) return `odManagementData:${user.id}`;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'odManagementData:anonymous';
 }
 
-function loadData() {
-  const savedData = localStorage.getItem('odManagementData');
+async function saveData() {
+  const key = await getStorageKey();
+  localStorage.setItem(key, JSON.stringify(appState));
+}
+
+async function loadData() {
+  const key = await getStorageKey();
+  const savedData = localStorage.getItem(key);
   if (savedData) {
     const loaded = JSON.parse(savedData);
     appState = { ...appState, ...loaded };
@@ -100,6 +115,23 @@ function initializeNavigation() {
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', function() {
       sidebar.classList.toggle('active');
+    });
+  }
+
+  // Logout button (uses Supabase auth)
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (typeof supabaseClient !== 'undefined') {
+        try {
+          await supabaseClient.auth.signOut();
+        } catch (err) {
+          // ignore
+        }
+      }
+      // clear any in-memory state and redirect to login
+      window.location.href = '/index.html';
     });
   }
 
