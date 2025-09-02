@@ -12,24 +12,25 @@
     </head>
     <body class="login-page">
         <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;">
-            <div style="max-width:420px;width:100%">
-                <div class="card">
+            <div style="max-width:480px;width:100%;display:flex;justify-content:center;">
+                <div class="card" style="width:100%;">
                     <div class="card__header">
-                        <h2 style="margin:0">Sign in to OD Manager</h2>
+                        <h2 style="margin:0">OD Manager</h2>
+                        <p style="margin:6px 0 0;color:var(--color-text-secondary);font-size:13px">Sign in to manage your OD hours</p>
                     </div>
                     <div class="card__body">
-                        <div style="margin-bottom:16px;color:var(--color-text-secondary)">Use a simple name (username) or an email. If you enter only a name, the app will append <code>@local</code> to create an internal email for Supabase.</div>
+                        <div id="authNotice" style="margin-bottom:16px;color:var(--color-text-secondary)">Sign in or create an account using your email and password.</div>
 
                         <div id="authTabs" style="display:flex;gap:8px;margin-bottom:16px">
-                            <button id="showLogin" class="btn btn--secondary">Login</button>
-                            <button id="showSignup" class="btn">Sign up</button>
+                            <button id="showLogin" class="btn btn--secondary" aria-pressed="true">Login</button>
+                            <button id="showSignup" class="btn" aria-pressed="false">Sign up</button>
                         </div>
 
                         <!-- Login Form -->
                         <form id="loginForm" style="display:block">
                             <div class="form-group">
                                 <label class="form-label">Email</label>
-                                <input id="loginName" class="form-control" required />
+                                <input id="loginEmail" type="email" class="form-control" placeholder="you@example.com" required />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Password</label>
@@ -41,12 +42,12 @@
                         <!-- Signup Form -->
                         <form id="signupForm" style="display:none">
                             <div class="form-group">
-                                <label class="form-label">Full name</label>
-                                <input id="signupFullName" class="form-control" required />
+                                <label class="form-label">Full name (optional)</label>
+                                <input id="signupFullName" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Name or Email</label>
-                                <input id="signupName" class="form-control" required />
+                                <label class="form-label">Email</label>
+                                <input id="signupEmail" type="email" class="form-control" placeholder="you@example.com" required />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Password</label>
@@ -73,89 +74,77 @@
         <script src="supabase-config.js"></script>
 
         <script>
-            // Simple UI switching
-            const showLogin = document.getElementById('showLogin');
-            const showSignup = document.getElementById('showSignup');
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
+                    // Simple UI switching
+                    const showLogin = document.getElementById('showLogin');
+                    const showSignup = document.getElementById('showSignup');
+                    const loginForm = document.getElementById('loginForm');
+                    const signupForm = document.getElementById('signupForm');
 
-            showLogin.addEventListener('click', () => {
-                loginForm.style.display = 'block';
-                signupForm.style.display = 'none';
-                showLogin.classList.add('btn--secondary');
-                showSignup.classList.remove('btn--secondary');
-            });
-            showSignup.addEventListener('click', () => {
-                loginForm.style.display = 'none';
-                signupForm.style.display = 'block';
-                showSignup.classList.add('btn--secondary');
-                showLogin.classList.remove('btn--secondary');
-            });
+                    function setTab(isLogin) {
+                        loginForm.style.display = isLogin ? 'block' : 'none';
+                        signupForm.style.display = isLogin ? 'none' : 'block';
+                        showLogin.classList.toggle('btn--secondary', isLogin);
+                        showSignup.classList.toggle('btn--secondary', !isLogin);
+                        showLogin.setAttribute('aria-pressed', isLogin ? 'true' : 'false');
+                        showSignup.setAttribute('aria-pressed', !isLogin ? 'true' : 'false');
+                    }
 
-            // helper toast
-            function showToast(message, type = 'info') {
-                const toastContainer = document.getElementById('toastContainer');
-                if (!toastContainer) return;
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.textContent = message;
-                toastContainer.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
-            }
+                    showLogin.addEventListener('click', () => setTab(true));
+                    showSignup.addEventListener('click', () => setTab(false));
 
-            // Use a username-only workflow: if user enters a plain name without '@', append @local
-            function normalizeIdentifier(input) {
-                const v = input.trim();
-                return v.includes('@') ? v : `${v}@local`;
-            }
+                    // helper toast
+                    function showToast(message, type = 'info') {
+                        const toastContainer = document.getElementById('toastContainer');
+                        if (!toastContainer) return;
+                        const toast = document.createElement('div');
+                        toast.className = `toast ${type}`;
+                        toast.textContent = message;
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3500);
+                    }
 
-            // Ensure supabaseClient exists
-            if (typeof supabaseClient === 'undefined') {
-                showToast('Supabase not configured. Copy supabase-config.example.js to supabase-config.js and add your keys.', 'error');
-            }
+                    // Login handler (email-only)
+                    loginForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const email = document.getElementById('loginEmail').value.trim();
+                        const password = document.getElementById('loginPassword').value;
+                        if (!email || !password) return showToast('Please provide both email and password', 'warning');
 
-            // Login handler
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('loginName').value.trim();
-                const password = document.getElementById('loginPassword').value;
-                if (!name || !password) return showToast('Provide credentials', 'warning');
+                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
 
-                const email = normalizeIdentifier(name);
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) {
-                    showToast(error.message || 'Login failed', 'error');
-                    return;
-                }
-                showToast('Login successful', 'success');
-                // redirect to protected app
-                window.location.href = '/app.html';
-            });
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                        if (error) {
+                            showToast(error.message || 'Login failed', 'error');
+                            return;
+                        }
+                        showToast('Login successful', 'success');
+                        window.location.href = '/app.html';
+                    });
 
-            // Signup handler
-            signupForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const fullName = document.getElementById('signupFullName').value.trim();
-                const name = document.getElementById('signupName').value.trim();
-                const password = document.getElementById('signupPassword').value;
-                const confirm = document.getElementById('signupConfirmPassword').value;
+                    // Signup handler (email-only)
+                    signupForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const fullName = document.getElementById('signupFullName').value.trim();
+                        const email = document.getElementById('signupEmail').value.trim();
+                        const password = document.getElementById('signupPassword').value;
+                        const confirm = document.getElementById('signupConfirmPassword').value;
 
-                if (!fullName || !name || !password) return showToast('All fields required', 'warning');
-                if (password !== confirm) return showToast('Passwords do not match', 'error');
+                        if (!email || !password) return showToast('Please provide email and password', 'warning');
+                        if (password !== confirm) return showToast('Passwords do not match', 'error');
 
-                const email = normalizeIdentifier(name);
+                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
 
-                const { data, error } = await supabaseClient.auth.signUp({ email, password }, { data: { full_name: fullName } });
-                if (error) {
-                    showToast(error.message || 'Signup failed', 'error');
-                    return;
-                }
-                showToast('Account created. Check your email if verification is required. Logging you in...', 'success');
-                // try to sign in immediately
-                const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
-                window.location.href = '/app.html';
-            });
+                        const { data, error } = await supabaseClient.auth.signUp({ email, password }, { data: { full_name: fullName || null } });
+                        if (error) {
+                            showToast(error.message || 'Signup failed', 'error');
+                            return;
+                        }
+                        showToast('Account created. Logging you in...', 'success');
+                        // try to sign in immediately
+                        const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
+                        if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
+                        window.location.href = '/app.html';
+                    });
         </script>
     </body>
 </html>
