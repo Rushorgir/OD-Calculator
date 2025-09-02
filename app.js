@@ -256,6 +256,17 @@ function generateTimetableGrid() {
   
   grid.innerHTML = '';
 
+  if (Object.keys(appState.timetable).length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <i class="fas fa-table"></i>
+        <h4>Your Timetable is Empty</h4>
+        <p>Click on any "Available" slot to add a class. Use the Theory/Lab buttons to switch views.</p>
+      </div>
+    `;
+    return;
+  }
+
   const cornerCell = document.createElement('div');
   cornerCell.className = 'time-header';
   grid.appendChild(cornerCell);
@@ -593,12 +604,19 @@ function setupHistoryControls() {
 
 function updateHistoryTable() {
   const tbody = document.getElementById('historyTableBody');
-  if (!tbody) return;
+  const tableContainer = document.querySelector('.history-table-container');
+  const emptyState = document.getElementById('historyEmptyState');
+
+  if (!tbody || !tableContainer || !emptyState) return;
   
   if (appState.events.length === 0) {
-    tbody.innerHTML = '<tr class="no-data"><td colspan="7">No events found</td></tr>';
+    tableContainer.style.display = 'none';
+    emptyState.style.display = 'block';
     return;
   }
+
+  tableContainer.style.display = 'block';
+  emptyState.style.display = 'none';
 
   tbody.innerHTML = appState.events.map(event => {
     const eventDate = new Date(event.date).toLocaleDateString();
