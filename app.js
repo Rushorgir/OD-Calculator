@@ -65,33 +65,91 @@ if (document.readyState === 'loading') {
   bootApp();
 }
 
-async function getStorageKey() {
+async function saveData() {
+  if (typeof supabaseClient === 'undefined') {
+    console.error("Supabase client not available, cannot save.");
+    showToast('Cannot sync data: Connection issue.', 'error');
+    return;
+  }
+
   try {
-    if (typeof supabaseClient !== 'undefined') {
-      const { data } = await supabaseClient.auth.getUser();
-      const user = data && data.user;
-      if (user && user.id) return `odManagementData:${user.id}`;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return; // Not logged in
+
+    const dataToSave = {
+      odBalance: appState.odBalance,
+      timetable: appState.timetable,
+      events: appState.events,
+      currentClassType: appState.currentClassType
+    };
+
+    const { error } = await supabaseClient
+      .from('user_app_data')
+      .upsert({ user_id: user.id, app_data: dataToSave, updated_at: new Date().toISOString() });
+
+    if (error) {
+      console.error('Error saving data to Supabase:', error);
+      showToast('Error syncing data.', 'error');
     }
   } catch (e) {
-    // ignore
+    console.error('An unexpected error occurred during save:', e);
+    showToast('Could not sync data.', 'error');
   }
-  return 'odManagementData:anonymous';
-}
-
-async function saveData() {
-  const key = await getStorageKey();
-  localStorage.setItem(key, JSON.stringify(appState));
 }
 
 async function loadData() {
-  const key = await getStorageKey();
-  const savedData = localStorage.getItem(key);
-  if (savedData) {
-    const loaded = JSON.parse(savedData);
-    appState = { ...appState, ...loaded };
+  if (typeof supabaseClient === 'undefined') {
+    console.error("Supabase client not available, cannot load data.");
+    return;
   }
-  if (!savedData) {
-    appState.odBalance = APP_DATA.initial_od_balance;
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    // 1. Try to load from Supabase
+    const { data, error } = await supabaseClient
+      .from('user_app_data')
+      .select('app_data')
+      .eq('user_id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // Ignore "no rows" error for new users
+      console.error('Error loading data from Supabase:', error);
+      showToast('Error loading your data.', 'error');
+      return;
+    }
+
+    if (data && data.app_data) {
+      // Data found in Supabase
+      appState = { ...appState, ...data.app_data };
+      // Clean up old localStorage data if it exists
+      const oldKey = `odManagementData:${user.id}`;
+      if (localStorage.getItem(oldKey)) {
+        localStorage.removeItem(oldKey);
+      }
+    } else {
+      // 2. No data in Supabase, check for old data in localStorage to migrate
+      const oldKey = `odManagementData:${user.id}`;
+      const localData = localStorage.getItem(oldKey);
+
+      if (localData) {
+        console.log("Found local data, migrating to Supabase...");
+        showToast('Syncing your local data to the cloud...', 'info');
+        const loaded = JSON.parse(localData);
+        appState = { ...appState, ...loaded };
+        
+        await saveData(); // Save the migrated data to Supabase
+        localStorage.removeItem(oldKey); // Clean up after migration
+        showToast('Data sync complete!', 'success');
+      } else {
+        // 3. This is a new user with no local data, use defaults
+        appState.odBalance = APP_DATA.initial_od_balance;
+      }
+    }
+  } catch (e) {
+    console.error('An unexpected error occurred during load:', e);
+    showToast('Could not load your data.', 'error');
   }
 }
 
