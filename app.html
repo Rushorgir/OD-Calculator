@@ -272,6 +272,16 @@
   <!-- Toast Notifications -->
   <div id="toastContainer" class="toast-container"></div>
 
+  <!-- Tour Modal -->
+  <div id="tourOverlay" class="tour-overlay hidden"></div>
+  <div id="tourModal" class="tour-modal hidden">
+    <div class="tour-content">
+      <h3>Welcome to OD Manager!</h3>
+      <p>To get started, add your first event using the "Add Event" button in the sidebar.</p>
+      <div class="tour-arrow"></div>
+    </div>
+    <button id="tourEndBtn" class="btn btn--primary">Got it!</button>
+  </div>
 
   <!-- We'll load the main app script and supabase. The full app logic is inside app.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>

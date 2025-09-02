@@ -1514,3 +1514,68 @@ body {
 #historyTableBody tr:not(.no-data):hover {
   background-color: var(--color-bg-3);
 }
+
+/* Tour Modal Styles */
+.tour-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1040;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+
+.tour-overlay:not(.hidden) {
+  opacity: 1;
+}
+
+.tour-modal {
+  position: fixed;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-20);
+  z-index: 1050;
+  width: 280px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--duration-normal) var(--ease-standard), transform var(--duration-normal) var(--ease-standard);
+}
+
+.tour-modal:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tour-content h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-8);
+  color: var(--color-primary);
+}
+
+.tour-content p {
+  margin-bottom: var(--space-16);
+  font-size: var(--font-size-base);
+}
+
+.tour-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.tour-arrow.left {
+  top: 20px;
+  right: 100%;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent var(--color-surface) transparent transparent;
+}
+
+#tourEndBtn {
+  width: 100%;
+}

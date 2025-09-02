@@ -44,6 +44,7 @@ async function bootApp() {
   initializeEventForm();
   initializeHistory();
   updateDashboard();
+  initializeTour();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -878,4 +879,50 @@ function formatTime(time) {
     minute: '2-digit', 
     hour12: true 
   });
+}
+
+function initializeTour() {
+  const tourOverlay = document.getElementById('tourOverlay');
+  const tourModal = document.getElementById('tourModal');
+  const tourEndBtn = document.getElementById('tourEndBtn');
+  const addEventLink = document.querySelector('a[data-section="add-event"]');
+
+  if (!tourModal || !addEventLink || localStorage.getItem('tourCompleted') === 'true') {
+    return;
+  }
+
+  // Show tour only if there are no events, which is a good proxy for a first run.
+  if (appState.events.length === 0) {
+    positionTourModal(addEventLink, tourModal);
+    
+    tourOverlay.classList.remove('hidden');
+    tourModal.classList.remove('hidden');
+
+    tourEndBtn.addEventListener('click', endTour);
+    tourOverlay.addEventListener('click', endTour);
+  }
+}
+
+function positionTourModal(targetElement, tourModal) {
+  const targetRect = targetElement.getBoundingClientRect();
+  const modalArrow = tourModal.querySelector('.tour-arrow');
+
+  // Position modal to the right of the target
+  tourModal.style.top = `${targetRect.top}px`;
+  tourModal.style.left = `${targetRect.right + 20}px`;
+
+  // Add and position the arrow
+  if (modalArrow) {
+    modalArrow.classList.add('left');
+  }
+}
+
+function endTour() {
+  const tourOverlay = document.getElementById('tourOverlay');
+  const tourModal = document.getElementById('tourModal');
+
+  if (tourOverlay) tourOverlay.classList.add('hidden');
+  if (tourModal) tourModal.classList.add('hidden');
+  
+  localStorage.setItem('tourCompleted', 'true');
 }
