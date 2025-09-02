@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "prebuild": "node scripts/write-supabase-config.js",
-    "build": "echo \"static site\""
+    "build": "node scripts/build.js"
   }
 }
