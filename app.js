@@ -37,16 +37,33 @@ let appState = {
 };
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  loadData();
+async function bootApp() {
+  await loadData();
   initializeNavigation();
   initializeTimetable();
   initializeEventForm();
   initializeHistory();
   updateDashboard();
-  
+
   const today = new Date().toISOString().split('T')[0];
-});
+
+  // Modal control wiring (moved here so it runs even if DOMContentLoaded already fired)
+  const closeModalBtn = document.getElementById('closeModal');
+  const cancelConfirmBtn = document.getElementById('cancelConfirm');
+  const confirmAddBtn = document.getElementById('confirmAdd');
+
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModalHandler);
+  if (cancelConfirmBtn) cancelConfirmBtn.addEventListener('click', closeModalHandler);
+  if (confirmAddBtn) confirmAddBtn.addEventListener('click', confirmEventAddition);
+}
+
+// Ensure initialization runs whether the script is loaded before or after DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootApp);
+} else {
+  // document already loaded, run immediately
+  bootApp();
+}
 
 async function getStorageKey() {
   try {
