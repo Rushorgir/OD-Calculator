@@ -257,17 +257,6 @@ function generateTimetableGrid() {
   
   grid.innerHTML = '';
 
-  if (Object.keys(appState.timetable).length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <i class="fas fa-table"></i>
-        <h4>Your Timetable is Empty</h4>
-        <p>Click on any "Available" slot to add a class. Use the Theory/Lab buttons to switch views.</p>
-      </div>
-    `;
-    return;
-  }
-
   const cornerCell = document.createElement('div');
   cornerCell.className = 'time-header';
   grid.appendChild(cornerCell);

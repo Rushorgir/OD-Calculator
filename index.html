@@ -149,7 +149,7 @@
                             showToast(error.message || 'Signup failed', 'error');
                             return;
                         }
-                        showToast('Account created. Logging you in...', 'success');
+                        showToast('Account created!', 'success');
                         // try to sign in immediately
                         const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
                         if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
