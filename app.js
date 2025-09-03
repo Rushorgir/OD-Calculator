@@ -49,11 +49,9 @@ async function bootApp() {
   const today = new Date().toISOString().split('T')[0];
 
   // Modal control wiring (moved here so it runs even if DOMContentLoaded already fired)
-  const closeModalBtn = document.getElementById('closeModal');
   const cancelConfirmBtn = document.getElementById('cancelConfirm');
   const confirmAddBtn = document.getElementById('confirmAdd');
 
-  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModalHandler);
   if (cancelConfirmBtn) cancelConfirmBtn.addEventListener('click', closeModalHandler);
   if (confirmAddBtn) confirmAddBtn.addEventListener('click', confirmEventAddition);
 }
@@ -194,22 +192,63 @@ function initializeNavigation() {
     });
   }
 
-  // Logout button (uses Supabase auth)
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async function(e) {
-      e.preventDefault();
-      if (typeof supabaseClient !== 'undefined') {
+// Logout button (with confirmation modal)
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    const modal = document.getElementById('confirmModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const content = document.getElementById('confirmContent');
+    const confirmBtn = document.getElementById('confirmAdd');
+    const cancelBtn = document.getElementById('cancelConfirm');
+
+    if (!modal || !modalTitle || !content || !confirmBtn || !cancelBtn) return;
+
+    // Update modal for logout confirmation
+    modalTitle.textContent = "Confirm Logout";
+    content.innerHTML = `
+      <div class="logout-modal-body">
+        <i class="fas fa-sign-out-alt logout-icon"></i>
+        <p class="logout-text">Are you sure you want to log out of your account?</p>
+      </div>
+    `;
+    confirmBtn.style.display = "block";
+    confirmBtn.textContent = "Logout";
+    cancelBtn.textContent = "Cancel";
+
+    // Show modal
+    modal.classList.remove("hidden");
+
+    // Replace old confirm button to avoid duplicate listeners
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+    // Confirm logout
+    newConfirmBtn.addEventListener("click", async () => {
+      if (typeof supabaseClient !== "undefined") {
         try {
           await supabaseClient.auth.signOut();
         } catch (err) {
-          // ignore
+          console.error("Logout error:", err);
         }
       }
-      // clear any in-memory state and redirect to login
-      window.location.href = '/index.html';
+      window.location.href = "/index.html";
     });
-  }
+
+    // Cancel logout → go back to dashboard section (SPA style)
+    cancelBtn.onclick = () => {
+      modal.classList.add("hidden"); // hide modal
+
+      // Trigger the Dashboard nav item
+      const dashboardLink = document.querySelector('.nav-link[data-section="dashboard"]');
+      if (dashboardLink) {
+        dashboardLink.click(); // simulate sidebar Dashboard click
+      }
+    };
+  });
+}
 
   document.addEventListener('click', function(e) {
     if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && (!sidebarToggle || !sidebarToggle.contains(e.target))) {
@@ -382,6 +421,25 @@ function initializeEventForm() {
     e.preventDefault();
     handleEventSubmission();
   });
+
+  enableFullClickPickers();
+}
+
+/* ---------------- NEW HELPER ---------------- */
+function enableFullClickPickers() {
+  const pickers = document.querySelectorAll('input[type="date"], input[type="time"]');
+
+  pickers.forEach(input => {
+    input.style.cursor = "pointer"; // show hand cursor
+
+    input.addEventListener("click", () => {
+      if (input.showPicker) input.showPicker();
+    });
+
+    input.addEventListener("focus", () => {
+      if (input.showPicker) input.showPicker();
+    });
+  });
 }
 
 function checkConflicts() {
@@ -510,11 +568,9 @@ function showConfirmationModal(name, place, date, startTime, endTime, conflicts,
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  const closeModal = document.getElementById('closeModal');
   const cancelConfirm = document.getElementById('cancelConfirm');
   const confirmAdd = document.getElementById('confirmAdd');
 
-  if (closeModal) closeModal.addEventListener('click', closeModalHandler);
   if (cancelConfirm) cancelConfirm.addEventListener('click', closeModalHandler);
   if (confirmAdd) confirmAdd.addEventListener('click', confirmEventAddition);
 });

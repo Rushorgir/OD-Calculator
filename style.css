@@ -1591,3 +1591,65 @@ body {
   display: flex;
   align-items: center; /* keeps icon + text aligned */
 }
+
+/* Global subtle glow for all form controls */
+.form-control {
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* Hover glow */
+.form-control:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 6px var(--color-focus-ring);
+}
+
+/* Focus glow (slightly stronger) */
+.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-focus-ring);
+  outline: none; /* remove default browser outline */
+}
+
+/* Logout Modal Styles */
+.logout-modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.logout-modal-body .logout-icon {
+  font-size: 2.5rem;
+  color: #ef4444; /* red highlight */
+  margin-bottom: 6px;
+}
+
+.logout-modal-body .logout-text {
+  font-size: 1rem;
+  color: #fff;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Make confirm/cancel buttons nicer */
+.modal-footer .btn.cancel {
+  background: #e5e5e5;
+  color: #333;
+}
+
+.modal-footer .btn.cancel:hover {
+  background: #d4d4d4;
+}
+
+.modal-footer .btn.logout,
+.modal-footer .btn#confirmAdd {
+  background: #ef4444;
+  color: #fff;
+}
+
+.modal-footer .btn.logout:hover,
+.modal-footer .btn#confirmAdd:hover {
+  background: #dc2626;
+}
