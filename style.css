@@ -1716,3 +1716,106 @@ body {
   display: flex;
   gap: 9px; /* controls spacing between Export and Clear History */
 }
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 40px; /* make space for the icon */
+}
+
+.password-field .toggle-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+}
+
+/* Add this to style.css */
+.btn-loading {
+  pointer-events: none;
+  opacity: 0.8;
+  position: relative;
+}
+
+.btn-loading::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.strength-text {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+/* Password match indicator */
+.password-match {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.password-match.success {
+  color: #28a745; /* green */
+}
+
+.password-match.error {
+  color: #dc3545; /* red */
+}
+
+/* Track */
+.strength-meter {
+  flex: 1;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Fill bar */
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  background: #e74c3c;
+  transition: width 0.3s ease, background 0.3s ease;
+  border-radius: 4px; /* rounded both ends by default */
+}
+
+/* Ensure left side stays rounded, right adjusts dynamically */
+.strength-bar.weak {
+  width: 33%;
+  background: #e74c3c;
+  border-radius: 4px 0 0 4px; /* rounded left only */
+}
+.strength-bar.medium {
+  width: 66%;
+  background: #f39c12;
+  border-radius: 4px 0 0 4px; /* rounded left only */
+}
+.strength-bar.strong {
+  width: 100%;
+  background: #27ae60;
+  border-radius: 4px; /* rounded on both ends when full */
+}

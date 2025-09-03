@@ -984,3 +984,321 @@ function endTour() {
   
   localStorage.setItem('tourCompleted', 'true');
 }
+
+// Generate guaranteed strong password (8 chars: upper, lower, digit, symbol)
+function generateStrongPassword(length = 8) {
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*";
+
+    // Ensure at least 1 of each
+    let password = [
+        lower.charAt(Math.floor(Math.random() * lower.length)),
+        upper.charAt(Math.floor(Math.random() * upper.length)),
+        numbers.charAt(Math.floor(Math.random() * numbers.length)),
+        symbols.charAt(Math.floor(Math.random() * symbols.length))
+    ];
+
+    // Fill remaining with random mix
+    const allChars = lower + upper + numbers + symbols;
+    while (password.length < length) {
+        password.push(allChars.charAt(Math.floor(Math.random() * allChars.length)));
+    }
+
+    // Shuffle so guaranteed chars aren’t always at start
+    password = password.sort(() => Math.random() - 0.5).join('');
+    return password;
+}
+
+document.getElementById('generatePassword').addEventListener('click', async () => {
+    const password = generateStrongPassword(8);
+
+    const passField = document.getElementById('signupPassword');
+    const confirmField = document.getElementById('signupConfirmPassword');
+    passField.value = password;
+    confirmField.value = password;
+
+    // Trigger indicators
+    passField.dispatchEvent(new Event('input'));
+    confirmField.dispatchEvent(new Event('input'));
+
+    // Copy to clipboard
+    try {
+        await navigator.clipboard.writeText(password);
+        showToast('Generated password and copied to clipboard', 'success');
+    } catch (err) {
+        console.error("Clipboard error:", err);
+        showToast('Generated password created, but could not copy', 'warning');
+    }
+});
+
+// Automatically redirect if user is already logged in
+(async function checkSession() {
+    if (typeof supabaseClient === 'undefined') return;
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (session) {
+        // User is signed in, redirect to app
+        window.location.href = '/app.html';
+    }
+})();
+
+// Simple UI switching
+const showLogin = document.getElementById('showLogin');
+const showSignup = document.getElementById('showSignup');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+
+function setTab(isLogin) {
+    loginForm.style.display = isLogin ? 'block' : 'none';
+    signupForm.style.display = isLogin ? 'none' : 'block';
+    showLogin.classList.toggle('btn--secondary', !isLogin);
+    showSignup.classList.toggle('btn--secondary', isLogin);
+    showLogin.setAttribute('aria-pressed', isLogin ? 'true' : 'false');
+    showSignup.setAttribute('aria-pressed', !isLogin ? 'true' : 'false');
+}
+
+showLogin.addEventListener('click', () => setTab(true));
+showSignup.addEventListener('click', () => setTab(false));
+document.getElementById('goToSignup').addEventListener('click', () => setTab(false));
+document.getElementById('goToLogin').addEventListener('click', () => setTab(true));
+
+// helper toast
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+}
+
+// Login handler (email-only)
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) return showToast('Please provide both email and password', 'warning');
+
+    if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        showToast(error.message || 'Login failed', 'error');
+        return;
+    }
+    showToast('Login successful', 'success');
+    window.location.href = '/app.html';
+});
+
+signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fullName = document.getElementById('signupFullName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('signupConfirmPassword').value;
+
+    // Domain restriction: only allow @vitstudent.ac.in
+    const domainPattern = /@vitstudent\.ac\.in$/;
+    if (!domainPattern.test(email)) {
+        showToast('Please use your VIT student email (@vitstudent.ac.in)', 'error');
+        return;
+    }
+
+    if (!email || !password) {
+        showToast('Please provide email and password', 'warning');
+        return;
+    }
+
+    if (password !== confirm) {
+        showToast('Passwords do not match', 'error');
+        return;
+    }
+
+    if (typeof supabaseClient === 'undefined') {
+        showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
+        return;
+    }
+
+    try {
+        // Sign up
+        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp(
+            { email, password },
+            { data: { full_name: fullName || null } }
+        );
+
+        if (signUpError) {
+            if (signUpError.message && signUpError.message.toLowerCase().includes('already registered')) {
+                showToast('Account already exists. Please log in.', 'warning');
+            } else {
+                showToast(signUpError.message || 'Signup failed', 'error');
+            }
+            return;
+        }
+
+        showToast('Account created!', 'success');
+
+        const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (signInError) {
+            showToast(signInError.message || 'Auto-login failed', 'warning');
+            return;
+        }
+
+        window.location.href = '/app.html';
+    } catch (err) {
+        console.error(err);
+        showToast('Something went wrong. Try again.', 'error');
+    }
+});
+
+// Toggle password visibility
+document.querySelectorAll('.toggle-password').forEach(icon => {
+    icon.addEventListener('click', () => {
+        const targetId = icon.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+});
+
+function setButtonLoading(button, isLoading, text) {
+  if (isLoading) {
+    button.dataset.originalText = button.textContent; // save old text
+    button.textContent = text;
+    button.classList.add('btn-loading');
+  } else {
+    button.textContent = button.dataset.originalText;
+    button.classList.remove('btn-loading');
+  }
+}
+
+// Login handler
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const loginBtn = loginForm.querySelector('button[type="submit"]');
+  setButtonLoading(loginBtn, true, "Logging in...");
+
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!email || !password) {
+    showToast('Please provide both email and password', 'warning');
+    setButtonLoading(loginBtn, false);
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    showToast(error.message || 'Login failed', 'error');
+    setButtonLoading(loginBtn, false);
+    return;
+  }
+
+  showToast('Login successful', 'success');
+  window.location.href = '/app.html';
+});
+
+// Signup handler
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const signupBtn = signupForm.querySelector('button[type="submit"]');
+  setButtonLoading(signupBtn, true, "Signing up...");
+
+  const fullName = document.getElementById('signupFullName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirmPassword').value;
+
+  // Validation checks...
+  if (password !== confirm) {
+    showToast('Passwords do not match', 'error');
+    setButtonLoading(signupBtn, false);
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signUp(
+    { email, password },
+    { data: { full_name: fullName || null } }
+  );
+
+  if (error) {
+    showToast(error.message || 'Signup failed', 'error');
+    setButtonLoading(signupBtn, false);
+    return;
+  }
+
+  showToast('Account created!', 'success');
+  window.location.href = '/app.html';
+});
+
+// Password Strength Meter
+const signupPassword = document.getElementById("signupPassword");
+const strengthBar = document.querySelector(".strength-bar");
+const strengthText = document.getElementById("strengthText");
+
+signupPassword.addEventListener("input", () => {
+    const val = signupPassword.value;
+    let strength = 0;
+
+    if (val.length >= 8) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+    // Update bar and text
+    let width = (strength / 4) * 100;
+    strengthBar.style.width = width + "%";
+
+    if (strength === 0) {
+        strengthBar.style.background = "transparent";
+        strengthText.textContent = "Enter a password";
+    } else if (strength === 1) {
+        strengthBar.style.background = "#dc3545"; // red
+        strengthText.textContent = "Weak";
+    } else if (strength === 2) {
+        strengthBar.style.background = "#ffc107"; // yellow
+        strengthText.textContent = "Medium";
+    } else if (strength === 3) {
+        strengthBar.style.background = "#17a2b8"; // teal
+        strengthText.textContent = "Good";
+    } else {
+        strengthBar.style.background = "#28a745"; // green
+        strengthText.textContent = "Strong";
+    }
+});
+
+// Confirm Password Match
+const signupConfirmPassword = document.getElementById("signupConfirmPassword");
+const passwordMatch = document.getElementById("passwordMatch");
+
+function checkPasswordMatch() {
+    if (signupConfirmPassword.value === "") {
+        passwordMatch.textContent = "";
+        passwordMatch.className = "password-match";
+        return;
+    }
+
+    if (signupPassword.value === signupConfirmPassword.value) {
+        passwordMatch.textContent = "Passwords match";
+        passwordMatch.className = "password-match success";
+    } else {
+        passwordMatch.textContent = "Passwords don’t match";
+        passwordMatch.className = "password-match error";
+    }
+}
+
+signupPassword.addEventListener("input", checkPasswordMatch);
+signupConfirmPassword.addEventListener("input", checkPasswordMatch);

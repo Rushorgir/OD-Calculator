@@ -41,16 +41,19 @@
                                 <label class="form-label">Email</label>
                                 <input id="loginEmail" type="email" class="form-control" placeholder="you@vitstudent.ac.in" required />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group password-wrapper">
                                 <label class="form-label">Password</label>
-                                <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required />
+                                <div class="password-field">
+                                    <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required />
+                                    <i class="fa-solid fa-eye toggle-password" data-target="loginPassword"></i>
+                                </div>
                             </div>
                             <div style="text-align:left;margin-top:6px;">
                                 <a href="forgot-password.html" style="font-size:13px;color:#32b8c6;text-decoration:none;">Forgot password?</a>
                             </div>
                             <div style="margin:10px 0 20px 0; text-align:center; font-size:14px; color:var(--color-text-secondary);">
                                 Don't have an account? 
-                                <a href="javascript:void(0);" id="goToSignup" style="color:#32b8c6; text-decoration:none; font-weight:600;">Sign up here</a>
+                                <a href="javascript:void(0);" id="goToSignup" style="color:#32b8c6; text-decoration:none; font-weight:600;">Sign up here!</a>
                             </div>
 
                             <button type="submit" class="btn btn--primary btn--full-width">Log in</button>
@@ -66,13 +69,35 @@
                                 <label class="form-label">Email</label>
                                 <input id="signupEmail" type="email" class="form-control" placeholder="you@vitstudent.ac.in" required />
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Password</label>
-                                <input id="signupPassword" type="password" class="form-control" placeholder="Create your password" required />
+                            <div class="form-group password-wrapper">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <label class="form-label">Password</label>
+                                    <a href="javascript:void(0);" id="generatePassword" style="font-size:12px;color:#32b8c6;text-decoration:none;font-weight:600;">Generate Password</a>
+                                </div>
+                                <div class="password-field">
+                                    <input id="signupPassword" type="password" class="form-control" placeholder="Create your password (Atleast 6 characters)" required />
+                                    <i class="fa-solid fa-eye toggle-password" data-target="signupPassword"></i>
+                                </div>
+                                <div id="passwordStrengthContainer" style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                                    <span style="font-size:13px;color:var(--color-text-secondary);white-space:nowrap;">
+                                        Strength Meter:
+                                    </span>
+                                    <div class="strength-meter">
+                                        <div id="passwordStrength" class="strength-bar"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group password-wrapper">
                                 <label class="form-label">Confirm Password</label>
-                                <input id="signupConfirmPassword" type="password" class="form-control" placeholder="Retype your password" required />
+                                <div class="password-field">
+                                    <input id="signupConfirmPassword" type="password" class="form-control" placeholder="Retype your password" required />
+                                    <i class="fa-solid fa-eye toggle-password" data-target="signupConfirmPassword"></i>
+                                </div>
+                                <small id="passwordMatch" class="password-match"></small>
+                            </div>
+                            <div style="margin:10px 0 20px 0; text-align:center; font-size:14px; color:var(--color-text-secondary);">
+                                Already have an account? 
+                                <a href="javascript:void(0);" id="goToLogin" style="color:#32b8c6; text-decoration:none; font-weight:600;">Log in here!</a>
                             </div>
                             <button type="submit" class="btn btn--primary btn--full-width">Create account</button>
                         </form>
@@ -89,129 +114,6 @@
 
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
         <script src="supabase-config.js"></script>
-
-        <script>
-                    // Automatically redirect if user is already logged in
-                    (async function checkSession() {
-                        if (typeof supabaseClient === 'undefined') return;
-
-                        const { data: { session } } = await supabaseClient.auth.getSession();
-
-                        if (session) {
-                            // User is signed in, redirect to app
-                            window.location.href = '/app.html';
-                        }
-                    })();
-                
-                    // Simple UI switching
-                    const showLogin = document.getElementById('showLogin');
-                    const showSignup = document.getElementById('showSignup');
-                    const loginForm = document.getElementById('loginForm');
-                    const signupForm = document.getElementById('signupForm');
-
-                    function setTab(isLogin) {
-                        loginForm.style.display = isLogin ? 'block' : 'none';
-                        signupForm.style.display = isLogin ? 'none' : 'block';
-                        showLogin.classList.toggle('btn--secondary', !isLogin);
-                        showSignup.classList.toggle('btn--secondary', isLogin);
-                        showLogin.setAttribute('aria-pressed', isLogin ? 'true' : 'false');
-                        showSignup.setAttribute('aria-pressed', !isLogin ? 'true' : 'false');
-                    }
-
-                    showLogin.addEventListener('click', () => setTab(true));
-                    showSignup.addEventListener('click', () => setTab(false));
-                    document.getElementById('goToSignup').addEventListener('click', () => setTab(false));
-                    // helper toast
-                    function showToast(message, type = 'info') {
-                        const toastContainer = document.getElementById('toastContainer');
-                        if (!toastContainer) return;
-                        const toast = document.createElement('div');
-                        toast.className = `toast ${type}`;
-                        toast.textContent = message;
-                        toastContainer.appendChild(toast);
-                        setTimeout(() => toast.remove(), 3500);
-                    }
-
-                    // Login handler (email-only)
-                    loginForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const email = document.getElementById('loginEmail').value.trim();
-                        const password = document.getElementById('loginPassword').value;
-                        if (!email || !password) return showToast('Please provide both email and password', 'warning');
-
-                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
-
-                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                        if (error) {
-                            showToast(error.message || 'Login failed', 'error');
-                            return;
-                        }
-                        showToast('Login successful', 'success');
-                        window.location.href = '/app.html';
-                    });
-
-                    signupForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const fullName = document.getElementById('signupFullName').value.trim();
-                        const email = document.getElementById('signupEmail').value.trim();
-                        const password = document.getElementById('signupPassword').value;
-                        const confirm = document.getElementById('signupConfirmPassword').value;
-
-                        // Domain restriction: only allow @vitstudent.ac.in
-                        const domainPattern = /@vitstudent\.ac\.in$/;
-                        if (!domainPattern.test(email)) {
-                            showToast('Please use your VIT student email (@vitstudent.ac.in)', 'error');
-                            return;
-                        }
-
-                        if (!email || !password) {
-                            showToast('Please provide email and password', 'warning');
-                            return;
-                        }
-
-                        if (password !== confirm) {
-                            showToast('Passwords do not match', 'error');
-                            return;
-                        }
-
-                        if (typeof supabaseClient === 'undefined') {
-                            showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
-                            return;
-                        }
-
-                        try {
-                            // Sign up
-                            const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp(
-                                { email, password },
-                                { data: { full_name: fullName || null } }
-                            );
-
-                            if (signUpError) {
-                                // Check if the error is due to existing account
-                                if (signUpError.message && signUpError.message.toLowerCase().includes('already registered')) {
-                                    showToast('Account already exists. Please log in.', 'warning');
-                                } else {
-                                    showToast(signUpError.message || 'Signup failed', 'error');
-                                }
-                                return;
-                            }
-
-                            showToast('Account created!', 'success');
-
-                            // Sign in immediately after signup
-                            const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-                            if (signInError) {
-                                showToast(signInError.message || 'Auto-login failed', 'warning');
-                                return;
-                            }
-
-                            window.location.href = '/app.html';
-                        } catch (err) {
-                            console.error(err);
-                            showToast('Something went wrong. Try again.', 'error');
-                        }
-                    });
-        </script>
+        <script src="app.js"></script>
     </body>
 </html>
