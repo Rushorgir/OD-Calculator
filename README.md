@@ -42,8 +42,7 @@ This project is live and ready to use! You can access it here: [**OD Calculator 
 1.	**Sign Up/Login** → Create an account or log in to access the app.
 2.	**Setup Timetable** → Navigate to the "Timetable" section and click on available slots to add your classes.
 3.	**Add Events** → Go to "Add Event", fill in the details, and see automatic conflict detection.
-4.	**Manage Settings** → Visit the "Settings" page to change your name, theme, or export your data.
-5.	**View History** → Check the "Event History" to search, view details, or delete past events.
+4.	**View History** → Check the "Event History" to search, view details, or delete past events.
 
 ---
 
