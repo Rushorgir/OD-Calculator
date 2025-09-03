@@ -45,7 +45,8 @@
                                 <label class="form-label">Password</label>
                                 <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required />
                             </div>
-                            </div>
+
+                            <!-- New text for signup -->
                             <div style="margin:10px 0 20px 0; text-align:center; font-size:14px; color:var(--color-text-secondary);">
                                 Don't have an account? 
                                 <a href="javascript:void(0);" id="goToSignup" style="color:#32b8c6; text-decoration:none; font-weight:600;">Sign up here</a>
@@ -76,7 +77,7 @@
                         </form>
 
                         <div style="margin-top:12px;text-align:center">
-                            <small>You will stay signed in by default unless you logout manually!</small>
+                            <small>After login you'll be redirected to the OD Calculator.</small>
                         </div>
                     </div>
                 </div>
@@ -107,7 +108,6 @@
                     showLogin.addEventListener('click', () => setTab(true));
                     showSignup.addEventListener('click', () => setTab(false));
                     document.getElementById('goToSignup').addEventListener('click', () => setTab(false));
-
                     // helper toast
                     function showToast(message, type = 'info') {
                         const toastContainer = document.getElementById('toastContainer');
@@ -119,24 +119,20 @@
                         setTimeout(() => toast.remove(), 3500);
                     }
 
+                    // Login handler (email-only)
                     loginForm.addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const email = document.getElementById('loginEmail').value.trim();
                         const password = document.getElementById('loginPassword').value;
-                        const keepSignedIn = document.getElementById('keepSignedIn').checked;
-
                         if (!email || !password) return showToast('Please provide both email and password', 'warning');
-                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured', 'error');
 
-                        const { data, error } = await supabaseClient.auth.signInWithPassword({
-                            email,
-                            password
-                        }, {
-                            persistSession: keepSignedIn
-                        });
+                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
 
-                        if (error) return showToast(error.message || 'Login failed', 'error');
-
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                        if (error) {
+                            showToast(error.message || 'Login failed', 'error');
+                            return;
+                        }
                         showToast('Login successful', 'success');
                         window.location.href = '/app.html';
                     });
@@ -150,7 +146,6 @@
                         const confirm = document.getElementById('signupConfirmPassword').value;
 
                         if (!email || !password) return showToast('Please provide email and password', 'warning');
-                        if (password.length < 8) return showToast('Password must be at least 8 characters', 'warning');
                         if (password !== confirm) return showToast('Passwords do not match', 'error');
 
                         if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
@@ -165,15 +160,6 @@
                         const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
                         if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
                         window.location.href = '/app.html';
-                    });
-
-                    window.addEventListener('load', async () => {
-                        if (typeof supabaseClient !== 'undefined') {
-                            const { data: { session } } = await supabaseClient.auth.getSession();
-                            if (session) {
-                                window.location.href = '/app.html'; // redirect if already signed in
-                            }
-                        }
                     });
         </script>
     </body>
