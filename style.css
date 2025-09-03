@@ -1653,3 +1653,48 @@ body {
 .modal-footer .btn#confirmAdd:hover {
   background: #dc2626;
 }
+
+.logout-modal-body .logout-text {
+  font-size: var(--font-size-md);
+  color: var(--color-text); /* adapts to light/dark */
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Only affect stat cards in the dashboard */
+.dashboard-card .card__body {
+  display: flex;
+  align-items: center;     /* vertical center */
+  height: 100%;
+}
+
+.dashboard-card .stat-content {
+  display: flex;
+  align-items: center;     /* keep icon and text aligned */
+  gap: 1rem;
+}
+
+.dashboard-card .stat-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centers h3 + p vertically */
+  height: 100%;
+}
+
+/* Light mode login/signup toggle buttons */
+[data-color-scheme="light"] #authTabs .btn {
+  background-color: #f0f0f0;  /* neutral background for active */
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+[data-color-scheme="light"] #authTabs .btn[aria-pressed="true"] {
+  background-color: #008080; /* blue highlight for active tab */
+  color: #fff;
+  border-color: #007bff;
+}
+
+[data-color-scheme="light"] #authTabs .btn[aria-pressed="false"] {
+  background-color: #eaeaea;
+  color: #333;
+}
