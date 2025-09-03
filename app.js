@@ -192,41 +192,27 @@ function initializeNavigation() {
     });
   }
 
-// Logout button (with confirmation modal)
+// Logout button (with its own modal)
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', function (e) {
     e.preventDefault();
 
-    const modal = document.getElementById('confirmModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const content = document.getElementById('confirmContent');
-    const confirmBtn = document.getElementById('confirmAdd');
-    const cancelBtn = document.getElementById('cancelConfirm');
+    const logoutModal = document.getElementById('logoutModal');
+    const confirmLogoutBtn = document.getElementById('confirmLogout');
+    const cancelLogoutBtn = document.getElementById('cancelLogout');
 
-    if (!modal || !modalTitle || !content || !confirmBtn || !cancelBtn) return;
+    if (!logoutModal || !confirmLogoutBtn || !cancelLogoutBtn) return;
 
-    // Update modal for logout confirmation
-    modalTitle.textContent = "Confirm Logout";
-    content.innerHTML = `
-      <div class="logout-modal-body">
-        <i class="fas fa-sign-out-alt logout-icon"></i>
-        <p class="logout-text">Are you sure you want to log out of your account?</p>
-      </div>
-    `;
-    confirmBtn.style.display = "block";
-    confirmBtn.textContent = "Logout";
-    cancelBtn.textContent = "Cancel";
+    // Show logout modal
+    logoutModal.classList.remove("hidden");
 
-    // Show modal
-    modal.classList.remove("hidden");
-
-    // Replace old confirm button to avoid duplicate listeners
-    const newConfirmBtn = confirmBtn.cloneNode(true);
-    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    // Reset listeners to avoid duplicates
+    confirmLogoutBtn.replaceWith(confirmLogoutBtn.cloneNode(true));
+    const newConfirmLogoutBtn = document.getElementById('confirmLogout');
 
     // Confirm logout
-    newConfirmBtn.addEventListener("click", async () => {
+    newConfirmLogoutBtn.addEventListener("click", async () => {
       if (typeof supabaseClient !== "undefined") {
         try {
           await supabaseClient.auth.signOut();
@@ -237,15 +223,13 @@ if (logoutBtn) {
       window.location.href = "/index.html";
     });
 
-    // Cancel logout → go back to dashboard section (SPA style)
-    cancelBtn.onclick = () => {
-      modal.classList.add("hidden"); // hide modal
+    // Cancel logout → close modal
+    cancelLogoutBtn.onclick = () => {
+      logoutModal.classList.add("hidden");
 
-      // Trigger the Dashboard nav item
+      // Optional: Go back to dashboard
       const dashboardLink = document.querySelector('.nav-link[data-section="dashboard"]');
-      if (dashboardLink) {
-        dashboardLink.click(); // simulate sidebar Dashboard click
-      }
+      if (dashboardLink) dashboardLink.click();
     };
   });
 }
