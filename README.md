@@ -35,7 +35,7 @@ OD Management System is a modern web app to track OD hours, manage a weekly time
 ---
 
 ## 🛠 How to use?
-This project is live and ready to use! You can access it here: [**OD Calculator Tool**](https://od-calculator-one.vercel.app)
+This project is live and ready to use! You can access it here: [**OD Calculator Tool**](https://od-calculator-one.vercel.app/)
 ---
 
 ## 📋 Usage Guide
