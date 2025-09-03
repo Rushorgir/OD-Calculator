@@ -45,8 +45,9 @@
                                 <label class="form-label">Password</label>
                                 <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required />
                             </div>
-
-                            <!-- New text for signup -->
+                            <div style="text-align:left;margin-top:6px;">
+                                <a href="forgot-password.html" style="font-size:13px;color:#32b8c6;text-decoration:none;">Forgot password?</a>
+                            </div>
                             <div style="margin:10px 0 20px 0; text-align:center; font-size:14px; color:var(--color-text-secondary);">
                                 Don't have an account? 
                                 <a href="javascript:void(0);" id="goToSignup" style="color:#32b8c6; text-decoration:none; font-weight:600;">Sign up here</a>
@@ -77,7 +78,7 @@
                         </form>
 
                         <div style="margin-top:12px;text-align:center">
-                            <small>After login you'll be redirected to the OD Calculator.</small>
+                            <small>You will stay signed in by default! Click the logout button to sign out.</small>
                         </div>
                     </div>
                 </div>
@@ -90,6 +91,18 @@
         <script src="supabase-config.js"></script>
 
         <script>
+                    // Automatically redirect if user is already logged in
+                    (async function checkSession() {
+                        if (typeof supabaseClient === 'undefined') return;
+
+                        const { data: { session } } = await supabaseClient.auth.getSession();
+
+                        if (session) {
+                            // User is signed in, redirect to app
+                            window.location.href = '/app.html';
+                        }
+                    })();
+                
                     // Simple UI switching
                     const showLogin = document.getElementById('showLogin');
                     const showSignup = document.getElementById('showSignup');
