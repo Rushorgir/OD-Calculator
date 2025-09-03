@@ -39,7 +39,7 @@
                         <form id="loginForm" style="display:block">
                             <div class="form-group">
                                 <label class="form-label">Email</label>
-                                <input id="loginEmail" type="email" class="form-control" placeholder="you@example.com" required />
+                                <input id="loginEmail" type="email" class="form-control" placeholder="you@vitstudent.ac.in" required />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Password</label>
@@ -64,7 +64,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Email</label>
-                                <input id="signupEmail" type="email" class="form-control" placeholder="you@example.com" required />
+                                <input id="signupEmail" type="email" class="form-control" placeholder="you@vitstudent.ac.in" required />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Password</label>
@@ -150,7 +150,6 @@
                         window.location.href = '/app.html';
                     });
 
-                    // Signup handler (email-only)
                     signupForm.addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const fullName = document.getElementById('signupFullName').value.trim();
@@ -158,21 +157,60 @@
                         const password = document.getElementById('signupPassword').value;
                         const confirm = document.getElementById('signupConfirmPassword').value;
 
-                        if (!email || !password) return showToast('Please provide email and password', 'warning');
-                        if (password !== confirm) return showToast('Passwords do not match', 'error');
-
-                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
-
-                        const { data, error } = await supabaseClient.auth.signUp({ email, password }, { data: { full_name: fullName || null } });
-                        if (error) {
-                            showToast(error.message || 'Signup failed', 'error');
+                        // Domain restriction: only allow @vitstudent.ac.in
+                        const domainPattern = /@vitstudent\.ac\.in$/;
+                        if (!domainPattern.test(email)) {
+                            showToast('Please use your VIT student email (@vitstudent.ac.in)', 'error');
                             return;
                         }
-                        showToast('Account created!', 'success');
-                        // try to sign in immediately
-                        const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
-                        if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
-                        window.location.href = '/app.html';
+
+                        if (!email || !password) {
+                            showToast('Please provide email and password', 'warning');
+                            return;
+                        }
+
+                        if (password !== confirm) {
+                            showToast('Passwords do not match', 'error');
+                            return;
+                        }
+
+                        if (typeof supabaseClient === 'undefined') {
+                            showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
+                            return;
+                        }
+
+                        try {
+                            // Sign up
+                            const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp(
+                                { email, password },
+                                { data: { full_name: fullName || null } }
+                            );
+
+                            if (signUpError) {
+                                // Check if the error is due to existing account
+                                if (signUpError.message && signUpError.message.toLowerCase().includes('already registered')) {
+                                    showToast('Account already exists. Please log in.', 'warning');
+                                } else {
+                                    showToast(signUpError.message || 'Signup failed', 'error');
+                                }
+                                return;
+                            }
+
+                            showToast('Account created!', 'success');
+
+                            // Sign in immediately after signup
+                            const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+                            if (signInError) {
+                                showToast(signInError.message || 'Auto-login failed', 'warning');
+                                return;
+                            }
+
+                            window.location.href = '/app.html';
+                        } catch (err) {
+                            console.error(err);
+                            showToast('Something went wrong. Try again.', 'error');
+                        }
                     });
         </script>
     </body>
