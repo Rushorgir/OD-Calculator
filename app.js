@@ -35,6 +35,8 @@ let appState = {
   events: [],
   currentClassType: 'theory'
 };
+let lastDeleted = null;
+let undoTimer = null;
 
 
 async function bootApp() {
@@ -717,16 +719,45 @@ function removeEvent(eventId) {
   const eventToRemove = appState.events[index];
   const odToRestore = eventToRemove.odUsed || 0;
 
+  // Apply delete
   appState.odBalance += odToRestore;
-
   appState.events.splice(index, 1);
 
+  // Store for undo (only one at a time)
+  lastDeleted = { event: eventToRemove, index };
+
+  // Refresh + persist
   saveData();
   updateDashboard();
   updateHistoryTable();
-  
+  updateRecentEvents();
+
   const hoursRestored = (odToRestore / 60).toFixed(1);
-  showToast(`Event deleted! ${odToRestore} minutes (${hoursRestored} hours) restored to OD balance`, 'success');
+
+  // Show undo toast
+  showToast(`Event deleted. ${odToRestore} minutes (${hoursRestored}h) restored.`, 'success', {
+    actionText: 'Undo',
+    duration: 8000,
+    onAction: () => {
+      if (!lastDeleted) return;
+
+      // Revert the delete
+      const { event, index: originalIndex } = lastDeleted;
+      appState.events.splice(Math.min(originalIndex, appState.events.length), 0, event);
+      appState.odBalance -= (event.odUsed || 0);
+
+      // Clear state
+      lastDeleted = null;
+
+      // Refresh + persist
+      saveData();
+      updateDashboard();
+      updateHistoryTable();
+      updateRecentEvents();
+
+      showToast('Event restored!', 'info', { duration: 4000 });
+    }
+  });
 }
 
 function setupEventHistoryPopup() {
@@ -1065,15 +1096,63 @@ showSignup.addEventListener('click', () => setTab(false));
 document.getElementById('goToSignup').addEventListener('click', () => setTab(false));
 document.getElementById('goToLogin').addEventListener('click', () => setTab(true));
 
-// helper toast
-function showToast(message, type = 'info') {
-    const toastContainer = document.getElementById('toastContainer');
-    if (!toastContainer) return;
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
+function showToast(message, type = 'info', opts = {}) {
+  const { duration = 6000, actionText = null, onAction = null } = opts;
+
+  const toastContainer = document.getElementById('toastContainer');
+  if (!toastContainer) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <span class="toast-message">${message}</span>
+    ${actionText ? `<button class="toast-action">${actionText}</button>` : ''}
+    <div class="toast-progress"></div>
+  `;
+
+  toastContainer.appendChild(toast);
+
+  const progress = toast.querySelector('.toast-progress');
+  progress.style.animation = `toastProgress ${duration}ms linear forwards`;
+
+  let removed = false;
+  const remove = () => {
+    if (removed) return;
+    removed = true;
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 500);
+  };
+
+  let timer = setTimeout(remove, duration);
+
+  // Pause timer + animation
+  function pauseTimer() {
+    clearTimeout(timer);
+    progress.style.animationPlayState = "paused";
+  }
+
+  // Resume timer + animation
+  function resumeTimer() {
+    const computed = getComputedStyle(progress);
+    const remainingRatio = parseFloat(computed.transform.split(",")[0]?.replace("matrix(", "") || 1);
+    const remaining = duration * remainingRatio; // how much left
+    progress.style.animationPlayState = "running";
+    timer = setTimeout(remove, remaining);
+  }
+
+  // Hover events
+  toast.addEventListener("mouseenter", pauseTimer);
+  toast.addEventListener("mouseleave", resumeTimer);
+
+  // Action button
+  if (actionText && onAction) {
+    const btn = toast.querySelector('.toast-action');
+    btn.addEventListener('click', () => {
+      clearTimeout(timer);
+      remove();
+      onAction();
+    });
+  }
 }
 
 // Login handler (email-only)
