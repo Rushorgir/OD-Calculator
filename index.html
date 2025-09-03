@@ -45,9 +45,6 @@
                                 <label class="form-label">Password</label>
                                 <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required />
                             </div>
-                            <div class="form-group" style="margin-bottom:16px;">
-                                <input type="checkbox" id="keepSignedIn" />
-                                <label for="keepSignedIn" style="font-size:14px;color:var(--color-text-secondary);">Keep me signed in</label>
                             </div>
                             <div style="margin:10px 0 20px 0; text-align:center; font-size:14px; color:var(--color-text-secondary);">
                                 Don't have an account? 
@@ -79,7 +76,7 @@
                         </form>
 
                         <div style="margin-top:12px;text-align:center">
-                            <small>After login you'll be redirected to the OD Calculator.</small>
+                            <small>You will stay signed in by default unless you logout manually!</small>
                         </div>
                     </div>
                 </div>
@@ -135,8 +132,6 @@
                             email,
                             password
                         }, {
-                            // Supabase persists session by default, but you can use this for clarity
-                            // If you want temporary session, you can revoke later
                             persistSession: keepSignedIn
                         });
 
@@ -155,6 +150,7 @@
                         const confirm = document.getElementById('signupConfirmPassword').value;
 
                         if (!email || !password) return showToast('Please provide email and password', 'warning');
+                        if (password.length < 8) return showToast('Password must be at least 8 characters', 'warning');
                         if (password !== confirm) return showToast('Passwords do not match', 'error');
 
                         if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
