@@ -1579,3 +1579,15 @@ body {
 #tourEndBtn {
   width: 100%;
 }
+
+/* Light mode: keep default (dark icon) */
+[data-color-scheme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-color-scheme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.sidebar .nav-link {
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* keeps icon + text aligned */
+}

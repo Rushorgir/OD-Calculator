@@ -32,8 +32,8 @@
                         <div id="authNotice" style="margin-bottom:16px;color:var(--color-text-secondary)">Sign in or create an account using your email and password.</div>
 
                         <div id="authTabs" style="display:flex;gap:8px;margin-bottom:16px">
-                            <button id="showLogin" class="btn btn--secondary" aria-pressed="true">Login</button>
-                            <button id="showSignup" class="btn" aria-pressed="false">Sign up</button>
+                            <button id="showLogin" class="btn" aria-pressed="true">Login</button>
+                            <button id="showSignup" class="btn btn--secondary" aria-pressed="false">Sign up</button>
                         </div>
 
                         <!-- Login Form -->
@@ -93,8 +93,8 @@
                     function setTab(isLogin) {
                         loginForm.style.display = isLogin ? 'block' : 'none';
                         signupForm.style.display = isLogin ? 'none' : 'block';
-                        showLogin.classList.toggle('btn--secondary', isLogin);
-                        showSignup.classList.toggle('btn--secondary', !isLogin);
+                        showLogin.classList.toggle('btn--secondary', !isLogin);
+                        showSignup.classList.toggle('btn--secondary', isLogin);
                         showLogin.setAttribute('aria-pressed', isLogin ? 'true' : 'false');
                         showSignup.setAttribute('aria-pressed', !isLogin ? 'true' : 'false');
                     }

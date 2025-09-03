@@ -1,25 +1,25 @@
 const APP_DATA = {
   theory_slots: [
-    {"id": 1, "start": "08:00", "end": "08:50"},
-    {"id": 2, "start": "08:55", "end": "09:45"},
-    {"id": 3, "start": "09:50", "end": "10:40"},
-    {"id": 4, "start": "10:45", "end": "11:35"},
-    {"id": 5, "start": "11:40", "end": "12:30"},
-    {"id": 6, "start": "12:35", "end": "13:25"},
-    {"id": 7, "start": "14:00", "end": "14:50"},
-    {"id": 8, "start": "14:55", "end": "15:45"},
-    {"id": 9, "start": "15:50", "end": "16:40"},
-    {"id": 10, "start": "16:45", "end": "17:35"},
-    {"id": 11, "start": "17:40", "end": "18:30"},
-    {"id": 12, "start": "18:35", "end": "19:25"}
+    {"id": 1, "start": "08:00 AM", "end": "08:50 AM"},
+    {"id": 2, "start": "08:55 AM", "end": "09:45 AM"},
+    {"id": 3, "start": "09:50 AM", "end": "10:40 AM"},
+    {"id": 4, "start": "10:45 AM", "end": "11:35 AM"},
+    {"id": 5, "start": "11:40 AM", "end": "12:30 PM"},
+    {"id": 6, "start": "12:35 PM", "end": "1:25 PM"},
+    {"id": 7, "start": "2:00 PM", "end": "2:50 PM"},
+    {"id": 8, "start": "2:55 PM", "end": "3:45 PM"},
+    {"id": 9, "start": "3:50 PM", "end": "4:40 PM"},
+    {"id": 10, "start": "4:45 PM", "end": "5:35 PM"},
+    {"id": 11, "start": "5:40 PM", "end": "6:30 PM"},
+    {"id": 12, "start": "6:35 PM", "end": "7:25 PM"}
   ],
   lab_slots: [
-    {"id": 1, "start": "08:00", "end": "09:40"},
-    {"id": 2, "start": "09:50", "end": "11:30"},
-    {"id": 3, "start": "11:40", "end": "13:20"},
-    {"id": 4, "start": "14:00", "end": "15:40"},
-    {"id": 5, "start": "15:50", "end": "17:30"},
-    {"id": 6, "start": "17:40", "end": "19:20"}
+    {"id": 1, "start": "08:00 AM", "end": "09:40 AM"},
+    {"id": 2, "start": "09:50 AM", "end": "11:30 AM"},
+    {"id": 3, "start": "11:40 AM", "end": "1:20 PM"},
+    {"id": 4, "start": "2:00 PM", "end": "3:40 PM"},
+    {"id": 5, "start": "3:50 PM", "end": "5:30 PM"},
+    {"id": 6, "start": "5:40 PM", "end": "7:20 PM"}
   ],
   days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   initial_od_balance: 40 * 60,
