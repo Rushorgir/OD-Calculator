@@ -12,7 +12,7 @@
   <!-- Sidebar Navigation -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h2><i class="fas fa-calendar-check"></i> OD Manager</h2>
+      <h2><i class="fas fa-calendar-check"></i>&nbsp;&nbsp;OD Manager</h2>
       <button class="sidebar-toggle" id="sidebarToggle">
         <i class="fas fa-bars"></i>
       </button>
@@ -23,7 +23,7 @@
           <i class="fas fa-home"></i> Dashboard
         </a>
       </li>
-      <li
+      <li>
         <a href="#" data-section="timetable" class="nav-link">
           <i class="fas fa-table"></i> Timetable
         </a>
@@ -58,9 +58,9 @@
     <section id="dashboard" class="section active">
       <div class="section-header">
         <h1>Dashboard</h1>
-        <p>Welcome to your OD Management System</p>
+        <p>Overview of your OD hours and Events</p>
       </div>
-
+      <hr class="section-separator">
       <div class="dashboard-grid">
         <div class="card dashboard-card od-balance-card">
           <div class="card__body">
@@ -128,8 +128,13 @@
             <h3>Recent Events</h3>
           </div>
           <div class="card__body">
-            <div id="recentEventsList" class="events-list">
-              <p class="no-events">No events added yet</p>
+            <div id="recentEventsContainer">
+              <div id="recentEventsList"></div>
+              <div id="recentEventsEmptyState" class="empty-state hidden">
+                <i class="fas fa-calendar-times"></i>
+                <h4>No Events Added Yet</h4>
+                <p>Your recent events will appear here. Get started by clicking the "Add Event" button in the sidebar.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -142,7 +147,7 @@
         <h1>Timetable Management</h1>
         <p>Set up your weekly class schedule</p>
       </div>
-
+      <hr class="section-separator">
       <div class="timetable-controls">
         <div class="class-type-selector">
           <button class="btn btn--secondary class-type-btn active" data-type="theory">
@@ -168,7 +173,7 @@
         <h1>Add Event</h1>
         <p>Enter event details to calculate OD usage</p>
       </div>
-
+      <hr class="section-separator">
       <div class="add-event-container">
         <form id="eventForm" class="event-form">
           <div class="form-group">
@@ -200,7 +205,7 @@
           <div id="conflictPreview" class="conflict-preview"></div>
 
           <button type="submit" class="btn btn--primary btn--full-width">
-            <i class="fas fa-plus"></i> Add Event
+            <i class="fas fa-plus"></i>&nbsp;Add Event
           </button>
         </form>
       </div>
@@ -212,15 +217,21 @@
         <h1>Event History</h1>
         <p>View all your past events and OD usage</p>
       </div>
-
+      <hr class="section-separator">
       <div class="history-controls">
         <div class="search-container">
           <input type="text" id="searchEvents" class="form-control" placeholder="Search events...">
           <i class="fas fa-search search-icon"></i>
         </div>
-        <button class="btn btn--outline" id="exportHistory">
-          <i class="fas fa-download"></i>&nbsp;Export
-        </button>
+
+        <div class="history-buttons">
+          <button class="btn btn--outline" id="exportHistory">
+            <i class="fas fa-download"></i>&nbsp;Export
+          </button>
+          <button id="clearHistoryBtn" class="btn btn--outline">
+            <i class="fas fa-trash"></i>&nbsp;Clear History
+          </button>
+        </div>
       </div>
 
       <div class="history-container">

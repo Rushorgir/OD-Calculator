@@ -511,6 +511,11 @@ function handleEventSubmission() {
   const startTime = document.getElementById('startTime').value;
   const endTime = document.getElementById('endTime').value;
 
+  if (!startTime || !endTime || startTime >= endTime) {
+    showToast('Enter proper time: End time must be after start time', 'error');
+    return;
+  }
+
   const eventDay = new Date(eventDate).toLocaleDateString('en-US', { weekday: 'long' });
   const conflicts = findConflicts(eventDay, startTime, endTime);
   const totalOD = conflicts.reduce((sum, conflict) => sum + conflict.odHours, 0);
@@ -620,6 +625,7 @@ function initializeHistory() {
 function setupHistoryControls() {
   const searchInput = document.getElementById('searchEvents');
   const exportButton = document.getElementById('exportHistory');
+  const clearHistoryBtn = document.getElementById('clearHistoryBtn'); // ← add this
 
   if (searchInput) {
     searchInput.addEventListener('input', function() {
@@ -629,6 +635,24 @@ function setupHistoryControls() {
 
   if (exportButton) {
     exportButton.addEventListener('click', exportHistory);
+  }
+
+  if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', () => {
+      if (appState.events.length === 0) {
+        alert("No events to clear.");
+        return;
+      }
+
+      if (confirm("Are you sure you want to clear all events? This will restore all OD hours used.")) {
+        appState.events = [];
+        updateHistoryTable();   // refresh history table
+        updateRecentEvents();   // refresh recent events section
+        saveData();             // save updated state
+        updateDashboard();      // update OD progress and stats
+        showToast('All events cleared!', 'success');
+      }
+    });
   }
 }
 
@@ -867,14 +891,19 @@ function updateStats() {
 
 function updateRecentEvents() {
   const recentEventsList = document.getElementById('recentEventsList');
-  if (!recentEventsList) return;
-  
-  const recentEvents = appState.events.slice(-5).reverse();
+  const emptyState = document.getElementById('recentEventsEmptyState');
+
+  if (!recentEventsList || !emptyState) return;
+
+  const recentEvents = appState.events.slice(-4).reverse();
 
   if (recentEvents.length === 0) {
-    recentEventsList.innerHTML = '<p class="no-events">No events added yet</p>';
+    recentEventsList.innerHTML = '';
+    emptyState.classList.remove('hidden');
     return;
   }
+  
+  emptyState.classList.add('hidden');
 
   recentEventsList.innerHTML = recentEvents.map(event => `
     <div class="event-item">

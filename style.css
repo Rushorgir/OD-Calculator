@@ -1698,3 +1698,21 @@ body {
   background-color: #eaeaea;
   color: #333;
 }
+
+.section-separator {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* white at 10% opacity */
+  margin: 0px 0 35px 0; /* adjust top/bottom spacing */
+}
+
+.history-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* search stays left, buttons stay right */
+  gap: 10px; /* spacing between main items if needed */
+}
+
+.history-buttons {
+  display: flex;
+  gap: 9px; /* controls spacing between Export and Clear History */
+}
