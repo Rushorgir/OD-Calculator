@@ -45,7 +45,10 @@
                                 <label class="form-label">Password</label>
                                 <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required />
                             </div>
-
+                            <div class="form-group" style="margin-bottom:16px;">
+                                <input type="checkbox" id="keepSignedIn" />
+                                <label for="keepSignedIn" style="font-size:14px;color:var(--color-text-secondary);">Keep me signed in</label>
+                            </div>
                             <div style="margin:10px 0 20px 0; text-align:center; font-size:14px; color:var(--color-text-secondary);">
                                 Don't have an account? 
                                 <a href="javascript:void(0);" id="goToSignup" style="color:#32b8c6; text-decoration:none; font-weight:600;">Sign up here</a>
@@ -119,20 +122,26 @@
                         setTimeout(() => toast.remove(), 3500);
                     }
 
-                    // Login handler (email-only)
                     loginForm.addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const email = document.getElementById('loginEmail').value.trim();
                         const password = document.getElementById('loginPassword').value;
+                        const keepSignedIn = document.getElementById('keepSignedIn').checked;
+
                         if (!email || !password) return showToast('Please provide both email and password', 'warning');
+                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured', 'error');
 
-                        if (typeof supabaseClient === 'undefined') return showToast('Supabase is not configured. Add your keys to supabase-config.js', 'error');
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({
+                            email,
+                            password
+                        }, {
+                            // Supabase persists session by default, but you can use this for clarity
+                            // If you want temporary session, you can revoke later
+                            persistSession: keepSignedIn
+                        });
 
-                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                        if (error) {
-                            showToast(error.message || 'Login failed', 'error');
-                            return;
-                        }
+                        if (error) return showToast(error.message || 'Login failed', 'error');
+
                         showToast('Login successful', 'success');
                         window.location.href = '/app.html';
                     });
@@ -160,6 +169,15 @@
                         const { data: signInData, error: signInErr } = await supabaseClient.auth.signInWithPassword({ email, password });
                         if (signInErr) return showToast(signInErr.message || 'Auto-login failed', 'warning');
                         window.location.href = '/app.html';
+                    });
+
+                    window.addEventListener('load', async () => {
+                        if (typeof supabaseClient !== 'undefined') {
+                            const { data: { session } } = await supabaseClient.auth.getSession();
+                            if (session) {
+                                window.location.href = '/app.html'; // redirect if already signed in
+                            }
+                        }
                     });
         </script>
     </body>
